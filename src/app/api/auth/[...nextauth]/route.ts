@@ -1,5 +1,4 @@
 // /app/api/auth/[...nextauth]/route.ts
-
 import NextAuth, { Session  ,Token } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import ConnectDb from "@/lib/connection";
@@ -32,7 +31,9 @@ export const authOptions = {
         token._id = usr._id.toString();
         token.plan = usr.plan;
         token.createdAt = usr.createdAt;
+        token.credits = usr.credits
       }
+    
       return  token
     },
 
@@ -41,6 +42,7 @@ export const authOptions = {
          session.user._id = token._id as string;
         session.user.plan = token.plan;
         session.user.createdAt = token.createdAt;
+        session.user.credits = token.credits
       }
       return session;
     },

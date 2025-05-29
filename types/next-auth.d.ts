@@ -8,7 +8,8 @@ declare module 'next-auth' {
        photo?: string | null,
       _id?: string,
       plan?: string,
-      createdAt ? : Date
+      createdAt ? : Date,
+      credits : number
     };
   }
 }

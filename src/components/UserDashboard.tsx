@@ -1,49 +1,40 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Link,
   BarChart3,
-  History,
   Settings,
-  Zap,
   ArrowRight,
   Copy,
   Globe,
   Shield,
   TrendingUp,
   Users,
-  Clock,
   Star,
   CheckCircle,
   Crown,
-  ExternalLink,
   Calendar,
   MousePointer,
   Eye,
   Trash2,
-  Edit,
   Plus,
-  Award,
-  Smartphone,
-  Monitor,
-  MapPin,
-  RefreshCw,
   Lock,
   AlertTriangle,
   Gift,
 } from "lucide-react";
 import { userType } from "../../types/userType";
 import { useUrlStore } from "@/store/AuthStore";
+import { statsType } from "../../types/urlType";
 
-const UserDashboard = ({ User }: { User?: userType }) => {
+const UserDashboard = ({ User }: { User: userType }) => {
   const [copiedLink, setCopiedLink] = useState("");
-  const {getUrls , url } = useUrlStore();
-
-  useEffect(() => {
-  getUrls()
-  }, [])
+  const { getUrls, url } = useUrlStore();
   
+  useEffect(() => {
+    getUrls();
+  }, [getUrls]);
+
   // Mock user data - FREE USER
   const user = {
     name: "Sarah Wilson",
@@ -56,16 +47,17 @@ const UserDashboard = ({ User }: { User?: userType }) => {
     clicksToday: 23,
   };
 
-  const stats = [
+  const stats: statsType[] = [
     {
       title: "Links Used",
-      value: `${user.linksCreated}/50`,
+      value: `${url.length}/${User.credits}`,
       change: "+8%",
       icon: Link,
       color: "from-cyan-500 to-blue-500",
       bgColor: "from-cyan-500/10 to-blue-500/10",
-      isLimited: true,
-      percentage: (user.linksCreated / 50) * 100,
+      isLimited: User.plan == "Pro" ? false : true,
+      percentage:
+        (url.length / User.credits) * 100,
     },
     {
       title: "Monthly Clicks",
@@ -74,7 +66,7 @@ const UserDashboard = ({ User }: { User?: userType }) => {
       icon: MousePointer,
       color: "from-purple-500 to-pink-500",
       bgColor: "from-purple-500/10 to-pink-500/10",
-      isLimited: true,
+      isLimited: User.plan == "Pro" ? false : true,
       percentage: (user.totalClicks / 1000) * 100,
     },
     {
@@ -84,7 +76,7 @@ const UserDashboard = ({ User }: { User?: userType }) => {
       icon: TrendingUp,
       color: "from-green-500 to-emerald-500",
       bgColor: "from-green-500/10 to-emerald-500/10",
-      isLimited: false,
+      isLimited: User.plan == "Pro" ? false : true,
     },
     {
       title: "Analytics",
@@ -93,35 +85,8 @@ const UserDashboard = ({ User }: { User?: userType }) => {
       icon: Eye,
       color: "from-orange-500 to-red-500",
       bgColor: "from-orange-500/10 to-red-500/10",
-      isLimited: true,
+      isLimited: User.plan == "Pro" ? false : true,
       isFeature: true,
-    },
-  ];
-
-  const recentLinks = [
-    {
-      id: 1,
-      shortUrl: "lnk.spark/abc123",
-      originalUrl: "https://example.com/very-long-url-that-needs-shortening",
-      clicks: 125,
-      created: "2 hours ago",
-      status: "active",
-    },
-    {
-      id: 2,
-      shortUrl: "lnk.spark/xyz789",
-      originalUrl: "https://github.com/user/repository/issues/123",
-      clicks: 89,
-      created: "1 day ago",
-      status: "active",
-    },
-    {
-      id: 3,
-      shortUrl: "lnk.spark/def456",
-      originalUrl: "https://docs.example.com/api/documentation",
-      clicks: 54,
-      created: "3 days ago",
-      status: "active",
     },
   ];
 
@@ -158,13 +123,13 @@ const UserDashboard = ({ User }: { User?: userType }) => {
     },
   ];
 
-  const copyToClipboard = (url:string) => {
+  const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(url);
     setCopiedLink(url);
     setTimeout(() => setCopiedLink(""), 2000);
   };
 
-  const isNearLimit = (current:number, limit:number) => current / limit >= 0.8;
+  const isNearLimit = (current: number, limit: number) =>current / limit >= 0.8;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -187,7 +152,7 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                         🎉 Upgrade to Pro and unlock everything!
                       </h3>
                       <p className="text-white/80 mb-3">
-                        You're using {user.linksCreated}/50 links and{" "}
+                        You&apos;re using {user.linksCreated}/50 links and{" "}
                         {user.totalClicks}/1,000 clicks. Upgrade now for
                         unlimited links, advanced analytics, and premium
                         features.
@@ -225,49 +190,58 @@ const UserDashboard = ({ User }: { User?: userType }) => {
 
         {/* Welcome Section */}
         <div className="mb-8">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                         <Crown className="w-6 h-6 text-yellow-400" />              
-                      <h1 className="text-3xl font-bold text-white mb-2">
-                        Welcome back, {User?.name}! 👋
-                        
-                      </h1>
-                      <p className="text-white/70">
-                        Here's what's happening with your links today
-                      </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              {User?.plan === "Pro" ? (
+                <Crown className="w-6 h-6 text-yellow-400" />
+              ) : (
+                ""
+              )}
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Welcome back, {User?.name}! 👋
+              </h1>
+              <p className="text-white/70">
+                Here&apos;s what&apos;s happening with your links today
+              </p>
+            </div>
+
+            {/* Plan Status Card */}
+            <div className="mt-4 sm:mt-0">
+              <div
+                className={`relative p-4 rounded-xl border ${
+                  User?.plan == "Pro"
+                    ? "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30"
+                    : "bg-white/5 border-white/20"
+                } backdrop-blur-sm`}
+              >
+                <div className="flex items-center space-x-3">
+                  {User?.plan == "Pro" ? (
+                    <Crown className="w-6 h-6 text-yellow-400" />
+                  ) : (
+                    <Star className="w-6 h-6 text-white/70" />
+                  )}
+                  <div>
+                    <div
+                      className={`font-semibold ${
+                        User?.plan == "Pro" ? "text-yellow-400" : "text-white"
+                      }`}
+                    >
+                      {User?.plan} Plan
                     </div>
-                    
-                    {/* Plan Status Card */}
-                    <div className="mt-4 sm:mt-0">
-                      <div className={`relative p-4 rounded-xl border ${
-                        User?.plan == 'Pro' 
-                          ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30' 
-                          : 'bg-white/5 border-white/20'
-                      } backdrop-blur-sm`}>
-                        <div className="flex items-center space-x-3">
-                          {User?.plan == 'Pro' ? (
-                          <Crown className="w-6 h-6 text-yellow-400" />   
-                          ) : (
-                            <Star className="w-6 h-6 text-white/70" />
-                          )}
-                          <div>
-                            <div className={`font-semibold ${
-                              User?.plan == 'Pro' ? 'text-yellow-400' : 'text-white'
-                            }`}>
-                              {User?.plan} Plan
-                            </div>
-                            <div className="text-sm text-white/60">
-                              {User?.plan == 'free' ? 'Upgrade to unlock more features' : 'All features unlocked'}
-                            </div>
-                          </div>
-                          {User?.plan == 'free' && (
-                            <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300">
-                              Upgrade
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    <div className="text-sm text-white/60">
+                      {User?.plan == "free"
+                        ? "Upgrade to unlock more features"
+                        : "All features unlocked"}
                     </div>
+                  </div>
+                  {User?.plan == "free" && (
+                    <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300">
+                      Upgrade
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Usage Warning */}
             {User?.plan == "free" &&
@@ -279,11 +253,11 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                       <AlertTriangle className="w-6 h-6 text-red-400" />
                       <div>
                         <div className="font-semibold text-red-400">
-                          ApProaching Limits
+                          Approaching Limits
                         </div>
                         <div className="text-sm text-white/60">
-                          {isNearLimit(user.linksCreated, 50) &&
-                            `${50 - user.linksCreated} links remaining`}
+                          {isNearLimit(url.length, 15) &&
+                            `${15 - url.length} links remaining`}
                           {isNearLimit(user.totalClicks, 1000) &&
                             ` • ${1000 - user.totalClicks} clicks left`}
                         </div>
@@ -299,7 +273,10 @@ const UserDashboard = ({ User }: { User?: userType }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
-            const isNearLimitStat = stat.isLimited && stat.percentage >= 80;
+            const isNearLimitStat =
+              stat.isLimited &&
+              stat.percentage !== undefined &&
+              stat.percentage >= 80;
 
             return (
               <div key={index} className="group relative">
@@ -386,9 +363,9 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                 </div>
 
                 <div className="space-y-4">
-                  {url?.map((link) => (
+                  {url.map((link, index) => (
                     <div
-                      key={link?._id}
+                      key={index}
                       className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
                     >
                       <div className="flex items-center justify-between mb-2">
@@ -398,20 +375,20 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                           </div>
                           <div>
                             <div className="text-cyan-300 font-mono text-sm">
-                              {link?.shortUrl}
+                              {link.shortUrl}
                             </div>
                             <div className="text-white/50 text-xs truncate max-w-xs">
-                              {link?.longUrl}
+                              {link.longUrl}
                             </div>
                           </div>
                         </div>
 
                         <div className="flex items-center space-x-2">
                           <div className="text-white/70 text-sm">
-                            {link?.clicks} clicks
+                            {link.clicks} clicks
                           </div>
                           <button
-                            onClick={() => copyToClipboard(link?.shortUrl)}
+                            onClick={() => copyToClipboard(link.shortUrl)}
                             className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
                           >
                             {copiedLink === link?.shortUrl ? (
@@ -433,24 +410,30 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                       </div>
 
                       <div className="flex items-center justify-between text-xs text-white/50">
-                        <span>Created on {new Date(link?.createdAt).toLocaleDateString(
-                          "default",
-                          {
-                            month: "long",
-                            year: "numeric",
-                            day: "2-digit"
-                          }
-                        )}</span>
+                        <span>
+                          Created on{" "}
+                          {new Date(link.createdAt).toLocaleDateString(
+                            "default",
+                            {
+                              month: "long",
+                              year: "numeric",
+                              day: "2-digit",
+                            }
+                          )}
+                        </span>
                         <span className="flex items-center space-x-1">
                           <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                           <span>Active </span>
 
-                      <span className="text-red-500 text-[17px]">
-  Expires in {Math.ceil((new Date(link?.expiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
-</span>
-
+                          <span className="text-red-500 text-[17px]">
+                            Expires in{" "}
+                            {Math.ceil(
+                              (new Date(link?.expiry).getTime() - Date.now()) /
+                                (1000 * 60 * 60 * 24)
+                            )}{" "}
+                            days
+                          </span>
                         </span>
-                        
                       </div>
                     </div>
                   ))}
@@ -564,15 +547,15 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-white/70">Links Created</span>
                       <span className="text-white">
-                        {/* {user?.linksCreated} / {planLimits[user.plan].links} */}
+                        {url.length}
                       </span>
                     </div>
                     {User?.plan === "free" && (
                       <div className="w-full bg-white/10 rounded-full h-2">
-                        {/* <div 
+                        <div 
                           className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(user?.linksCreated / planLimits.free.links) * 100}%` }}
-                        ></div> */}
+                          style={{ width: `${(url.length / 10) * 100}%` }}
+                        ></div>
                       </div>
                     )}
                   </div>
@@ -640,7 +623,7 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                     <div className="flex justify-between text-sm">
                       <span className="text-white/70">Member since</span>
                       <span className="text-white">
-                        {new Date(User?.createdAt).toLocaleDateString(
+                        {new Date(User.createdAt).toLocaleDateString(
                           "default",
                           {
                             month: "long",
@@ -652,12 +635,20 @@ const UserDashboard = ({ User }: { User?: userType }) => {
                     <div className="flex justify-between text-sm">
                       <span className="text-white/70">Plan</span>
                       <div className="flex items-center space-x-2">
-                         <span className={User?.plan === 'Pro' ? 'text-yellow-400' : 'text-white'}>
-                        {User?.plan}
-                      </span>
-                        {User?.plan == 'free' && <button className="text-xs px-2 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full hover:shadow-lg transition-all">
-                          Upgrade
-                        </button>}
+                        <span
+                          className={
+                            User?.plan === "Pro"
+                              ? "text-yellow-400"
+                              : "text-white"
+                          }
+                        >
+                          {User?.plan}
+                        </span>
+                        {User?.plan == "free" && (
+                          <button className="text-xs px-2 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full hover:shadow-lg transition-all">
+                            Upgrade
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

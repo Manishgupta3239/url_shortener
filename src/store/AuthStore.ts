@@ -24,11 +24,23 @@ const useAuthStore = create<State>((set) => ({
   setLoading: (val) => set({ loading: val }),
 }));
 
+type urlType = {
+
+    clicks :number,
+    createdBy :string,
+    createdAt:Date,
+    expiry:Date,
+    longUrl:string,
+    shortUrl:string
+
+}
+
 type UrlState = {
     loading : boolean,
     getUrls : ()=>void,
-    url ?: []
+    url :urlType[]
 }
+
 
 const useUrlStore = create<UrlState>((set) => ({
   loading: false,
@@ -42,7 +54,6 @@ const useUrlStore = create<UrlState>((set) => ({
         
       set({loading:false})
       const data = await res.json(); 
-      console.log("zustand",data.urls)
      set({url : data.urls})
     } catch (err) {
       console.log(err);

@@ -3,6 +3,7 @@ export type userType = {
     email ? :string | null,
     image ? : string | null,
     _id ? :string,
-    createdAt ?: Date,
-    plan ? : string
+    createdAt : Date,
+    plan ? : string,
+    credits : number
 }

@@ -26,10 +26,12 @@ import {
 import { userType } from "../../types/userType";
 import { useUrlStore } from "@/store/AuthStore";
 import { statsType } from "../../types/urlType";
+import { useRouter } from "next/navigation";
 
 const UserDashboard = ({ User }: { User: userType }) => {
   const [copiedLink, setCopiedLink] = useState("");
-  const { getUrls, url } = useUrlStore();
+  const { getUrls, url ,loading} = useUrlStore();
+  const router = useRouter()
   
   useEffect(() => {
     getUrls();
@@ -353,17 +355,21 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         ? "bg-white/10 text-white/50 cursor-not-allowed"
                         : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg"
                     }`}
-                    disabled={user.linksCreated >= 50}
+                    disabled={url.length >= User.credits}
+                    onClick={()=>router.push('/')}
                   >
                     <Plus className="w-4 h-4" />
-                    <span>
-                      {user.linksCreated >= 50 ? "Limit Reached" : "New Link"}
+                    <span > 
+                      {url.length >= User.credits ? "Limit Reached" : "New Link"}
                     </span>
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  {url.map((link, index) => (
+                  {loading ? 
+                  (<div className="items-center translate-x-[50%]"> 
+  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  </div>) : (url.map((link, index) => (
                     <div
                       key={index}
                       className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
@@ -436,7 +442,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         </span>
                       </div>
                     </div>
-                  ))}
+                  )))}
                 </div>
 
                 <div className="mt-6 text-center">
@@ -448,6 +454,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
               </div>
             </div>
           </div>
+
 
           {/* Sidebar */}
           <div className="space-y-6">

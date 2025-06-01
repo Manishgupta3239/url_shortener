@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from "next/image";
 import { 
-  Link, BarChart3, History, Settings, ArrowRight, Copy, TrendingUp, Star, CheckCircle, Crown, 
+  Link, BarChart3, Settings, ArrowRight, Copy, TrendingUp, Star, CheckCircle, Crown, 
    MousePointer, Eye, Trash2, 
   Plus
 } from 'lucide-react';

@@ -28,6 +28,7 @@ export const authOptions = {
       await ConnectDb();
       const usr = await User.findOne({ email: user?.email });
       if (usr) {
+        console.log("usr",usr)
         token._id = usr._id.toString();
         token.plan = usr.plan;
         token.createdAt = usr.createdAt;

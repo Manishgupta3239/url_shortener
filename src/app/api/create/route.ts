@@ -4,6 +4,7 @@ import ConnectDb from "@/lib/connection";
 import { Url } from "@/models/urlModel/Url";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { User } from "@/models/UserModel/user";
 
 export async function POST(req: NextRequest){
     try{
@@ -18,9 +19,13 @@ export async function POST(req: NextRequest){
         const created = nanoid(6);
         const shortUrl = `http://localhost:3000/${created}`
         const expiry = new Date(Date.now() + 1000*60*60*24*7);
-        console.log(expiry);
         const newUrl = await Url.create({longUrl , shortUrl , createdBy : user._id , expiry});
-        if(! newUrl){
+        const document = await User.findOneAndUpdate(
+            { _id: user._id },
+            { $inc: { credits: -1 } },
+            { new: true }
+          );
+        if(! newUrl || ! document){
             return NextResponse.json({message: "shortUrl not created"} , {status:500} )
         }
         return NextResponse.json({message: "shortUrl created" , shortUrl} , {status:200});

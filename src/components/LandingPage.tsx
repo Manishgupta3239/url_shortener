@@ -16,12 +16,12 @@ import {
 import { userType } from "../../types/userType";
 import toast from "react-hot-toast";
 
-const LandingPage = ({ user }: { user?: userType }) => {
+const LandingPage = ({ user }: { user : userType }) => {
   const [url, setUrl] = useState("");
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [isShortening, setIsShortening] = useState(false);
   const [copied, setCopied] = useState(false);
-
+  
   const features = [
     {
       icon: Zap,
@@ -136,15 +136,16 @@ const LandingPage = ({ user }: { user?: userType }) => {
                     </div>
                     <button
                       onClick={handleShorten}
-                      disabled={!url || isShortening}
+                      disabled={!url || isShortening || user.credits <=0 }
                       className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                     >
                       {isShortening ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       ) : (
                         <>
-                          <span>Shorten</span>
-                          <ArrowRight className="w-5 h-5" />
+                          <span>{user.credits <= 0 ? ("Limit crossed !"):("Shorten")}</span>
+                          {user.credits <= 0 ? (""):<ArrowRight className="w-5 h-5" />}
+                          
                         </>
                       )}
                     </button>

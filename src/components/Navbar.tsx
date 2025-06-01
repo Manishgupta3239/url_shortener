@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { userType } from "../../types/userType";
 
 const Navbar = ( {user } : {user?: userType} ) => {
+  
   const [activeTab, setActiveTab] = useState("shorten");
   const [loading , setLoading] = useState(false);
   const router = useRouter()
@@ -63,12 +64,12 @@ const Navbar = ( {user } : {user?: userType} ) => {
           <div className="flex items-center">
             <div className="relative flex bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
               <div
-                className="absolute top-1 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300 ease-out shadow-lg"
+                className="absolute top-1 h-9 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300 ease-out shadow-lg"
                 style={{
                   width: `${100 / tabs.length}%`,
                   left: `${
                     (tabs.findIndex((tab) => tab.id === activeTab) * 100) /
-                    tabs.length
+                    tabs.length+1
                   }%`,
                 }}
               ></div>
@@ -81,7 +82,7 @@ const Navbar = ( {user } : {user?: userType} ) => {
                   <button
                     key={tab.id}
                     onClick={() => {router.push(tab.href);setActiveTab(tab.id);}}
-                    className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-out ${
+                    className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-100 ease-out ${
                       isActive 
                         ? "text-white shadow-lg"
                         : `${!user ? ('hover:blur-[1px] hover:cursor-not-allowed'):('text-white/70 hover:text-white hover:bg-white/10')}`

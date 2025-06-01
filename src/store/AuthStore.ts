@@ -43,20 +43,21 @@ type UrlState = {
 
 
 const useUrlStore = create<UrlState>((set) => ({
-  loading: false,
+  loading: true,
   url: [],
   getUrls: async () => {
     try {
         set({loading : true});
       const res = await fetch("/api/getUrls", {
         method: "GET",
-        });
-        
-      set({loading:false})
-      const data = await res.json(); 
+        });    
+    const data = await res.json(); 
      set({url : data.urls})
+      set({loading:false})
     } catch (err) {
       console.log(err);
+    }finally{
+      set({loading : false})
     }
   },
 }));

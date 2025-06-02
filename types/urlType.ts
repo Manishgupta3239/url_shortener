@@ -7,8 +7,8 @@ export type urlType = {
     createdAt?:Date,
     expiry?:Date,
     longUrl?:string,
-    shortUrl?:string
-
+    shortUrl?:string,
+    _id ? :string
 }
 
 

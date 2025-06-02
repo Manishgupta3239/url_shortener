@@ -1,15 +1,17 @@
 "use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import { Link, BarChart3, History, Settings, Zap, Star , LayoutDashboard , Crown} from "lucide-react";
 import { signIn, signOut} from "next-auth/react";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { userType } from "../../types/userType";
 
 const Navbar = ( {user } : {user?: userType} ) => {
   
-  const [activeTab, setActiveTab] = useState("shorten");
+  const pathname = usePathname()
+  const [activeTab, setActiveTab] = useState(pathname);
   const [loading , setLoading] = useState(false);
   const router = useRouter()
   const tabs = [
@@ -64,11 +66,11 @@ const Navbar = ( {user } : {user?: userType} ) => {
           <div className="flex items-center">
             <div className="relative flex bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
               <div
-                className="absolute top-1 h-9 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300 ease-out shadow-lg"
+                className="absolute top-1 h-9 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300 ease-out shadow-lg "
                 style={{
                   width: `${100 / tabs.length}%`,
                   left: `${
-                    (tabs.findIndex((tab) => tab.id === activeTab) * 100) /
+                    (tabs.findIndex((tab) => tab.href == pathname) * 100) /
                     tabs.length+1
                   }%`,
                 }}
@@ -76,12 +78,12 @@ const Navbar = ( {user } : {user?: userType} ) => {
 
               {tabs.map((tab) => {
                 const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
+                const isActive = activeTab === tab.href ;
 
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => {router.push(tab.href);setActiveTab(tab.id);}}
+                    onClick={() => {router.push(tab.href); setActiveTab(tab.href)}}
                     className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-100 ease-out ${
                       isActive 
                         ? "text-white shadow-lg"

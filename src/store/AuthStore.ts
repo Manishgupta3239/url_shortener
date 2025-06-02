@@ -32,17 +32,18 @@ type urlType = {
     expiry:Date,
     longUrl:string,
     shortUrl:string
-
+    _id:string
 }
 
 type UrlState = {
     loading : boolean,
     getUrls : ()=>void,
-    url :urlType[]
+    url :urlType[],
+    deleteUrl : (id:string)=>void,
 }
 
 
-const useUrlStore = create<UrlState>((set) => ({
+const useUrlStore = create<UrlState>((set,get) => ({
   loading: true,
   url: [],
   getUrls: async () => {
@@ -60,5 +61,18 @@ const useUrlStore = create<UrlState>((set) => ({
       set({loading : false})
     }
   },
+  deleteUrl : async (id)=>{
+    try{
+      set({loading : true})
+      const res = await fetch(`/api/delete/${id}`,{
+        method : "DELETE"
+      });
+      console.log(res)
+      get().getUrls()
+  
+    }catch(err){
+      console.log("error in delete fuction zustand",err);
+    }
+  }
 }));
 export { useAuthStore,useUrlStore };

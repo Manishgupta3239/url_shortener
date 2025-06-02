@@ -30,13 +30,14 @@ import { useRouter } from "next/navigation";
 
 const UserDashboard = ({ User }: { User: userType }) => {
   const [copiedLink, setCopiedLink] = useState("");
-  const { getUrls, url ,loading} = useUrlStore();
-  const router = useRouter()
-  
+  const { getUrls, url, loading, deleteUrl } = useUrlStore();
+  const router = useRouter();
+
   useEffect(() => {
     getUrls();
   }, [getUrls]);
 
+  console.log("user", User);
   // Mock user data - FREE USER
   const user = {
     name: "Sarah Wilson",
@@ -51,15 +52,14 @@ const UserDashboard = ({ User }: { User: userType }) => {
 
   const stats: statsType[] = [
     {
-      title: "Links Used",
-      value: `${url.length}/${User.credits}`,
+      title: "Credits  Used",
+      value: `${User.credits}/10`,
       change: "+8%",
       icon: Link,
       color: "from-cyan-500 to-blue-500",
       bgColor: "from-cyan-500/10 to-blue-500/10",
       isLimited: User.plan == "Pro" ? false : true,
-      percentage:
-        (url.length / User.credits) * 100,
+      percentage: (User.credits / 10) * 100,
     },
     {
       title: "Monthly Clicks",
@@ -131,7 +131,8 @@ const UserDashboard = ({ User }: { User: userType }) => {
     setTimeout(() => setCopiedLink(""), 2000);
   };
 
-  const isNearLimit = (current: number, limit: number) =>current / limit >= 0.8;
+  const isNearLimit = (current: number, limit: number) =>
+    current / limit >= 0.8;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -356,93 +357,100 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg"
                     }`}
                     disabled={url.length >= User.credits}
-                    onClick={()=>router.push('/')}
+                    onClick={() => router.push("/")}
                   >
                     <Plus className="w-4 h-4" />
-                    <span > 
-                      {url.length >= User.credits ? "Limit Reached" : "New Link"}
+                    <span>
+                      {User.credits <= 0 ? "Limit Reached" : "New Link"}
                     </span>
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  {loading ? 
-                  (<div className="items-center translate-x-[50%]"> 
-  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  </div>) : (url.map((link, index) => (
-                    <div
-                      key={index}
-                      className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                            <Link className="w-4 h-4 text-white" />
-                          </div>
-                          <div>
-                            <div className="text-cyan-300 font-mono text-sm">
-                              {link.shortUrl}
-                            </div>
-                            <div className="text-white/50 text-xs truncate max-w-xs">
-                              {link.longUrl}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <div className="text-white/70 text-sm">
-                            {link.clicks} clicks
-                          </div>
-                          <button
-                            onClick={() => copyToClipboard(link.shortUrl)}
-                            className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                          >
-                            {copiedLink === link?.shortUrl ? (
-                              <CheckCircle className="w-4 h-4 text-green-400" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-white/70" />
-                            )}
-                          </button>
-                          <button className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200 relative group">
-                            <BarChart3 className="w-4 h-4 text-white/70" />
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Lock className="w-2.5 h-2.5 text-white" />
-                            </div>
-                          </button>
-                          <button className="p-2 bg-white/10 hover:bg-red-500/20 rounded-lg transition-colors duration-200 group">
-                            <Trash2 className="w-4 h-4 text-white/70 group-hover:text-red-400" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-white/50">
-                        <span>
-                          Created on{" "}
-                          {new Date(link.createdAt).toLocaleDateString(
-                            "default",
-                            {
-                              month: "long",
-                              year: "numeric",
-                              day: "2-digit",
-                            }
-                          )}
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                          <span>Active </span>
-
-                          <span className="text-red-500 text-[17px]">
-                            Expires in{" "}
-                            {Math.ceil(
-                              (new Date(link?.expiry).getTime() - Date.now()) /
-                                (1000 * 60 * 60 * 24)
-                            )}{" "}
-                            days
-                          </span>
-                        </span>
-                      </div>
+                  {loading ? (
+                    <div className="items-center translate-x-[50%]">
+                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     </div>
-                  )))}
+                  ) : (
+                    url.map((link, index) => (
+                      <div
+                        key={index}
+                        className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                              <Link className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="text-cyan-300 font-mono text-sm">
+                                {link.shortUrl}
+                              </div>
+                              <div className="text-white/50 text-xs truncate max-w-xs">
+                                {link.longUrl}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <div className="text-white/70 text-sm">
+                              {link.clicks} clicks
+                            </div>
+                            <button
+                              onClick={() => copyToClipboard(link.shortUrl)}
+                              className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                            >
+                              {copiedLink === link?.shortUrl ? (
+                                <CheckCircle className="w-4 h-4 text-green-400" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-white/70" />
+                              )}
+                            </button>
+                            <button className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200 relative group">
+                              <BarChart3 className="w-4 h-4 text-white/70" />
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Lock className="w-2.5 h-2.5 text-white" />
+                              </div>
+                            </button>
+                            <button
+                              className="p-2 bg-white/10 hover:bg-red-500/20 rounded-lg transition-colors duration-200 group"
+                              onClick={() => deleteUrl(link._id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-white/70 group-hover:text-red-400" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs text-white/50">
+                          <span>
+                            Created on{" "}
+                            {new Date(link.createdAt).toLocaleDateString(
+                              "default",
+                              {
+                                month: "long",
+                                year: "numeric",
+                                day: "2-digit",
+                              }
+                            )}
+                          </span>
+                          <span className="flex items-center space-x-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>Active </span>
+
+                            <span className="text-red-500 text-[17px]">
+                              Expires in{" "}
+                              {Math.ceil(
+                                (new Date(link?.expiry).getTime() -
+                                  Date.now()) /
+                                  (1000 * 60 * 60 * 24)
+                              )}{" "}
+                              days
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 <div className="mt-6 text-center">
@@ -454,7 +462,6 @@ const UserDashboard = ({ User }: { User: userType }) => {
               </div>
             </div>
           </div>
-
 
           {/* Sidebar */}
           <div className="space-y-6">
@@ -553,13 +560,11 @@ const UserDashboard = ({ User }: { User: userType }) => {
                   <div>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-white/70">Links Created</span>
-                      <span className="text-white">
-                        {url.length}
-                      </span>
+                      <span className="text-white">{url.length}</span>
                     </div>
                     {User?.plan === "free" && (
                       <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${(url.length / 10) * 100}%` }}
                         ></div>

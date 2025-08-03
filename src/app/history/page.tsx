@@ -7,7 +7,7 @@ import {
   Eye,
   Calendar,
   Search,
-  Filter,
+  // Filter,
   Trash2,
   BarChart3,
   Clock,
@@ -21,7 +21,7 @@ const HistoryPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterBy, setFilterBy] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-  const [copiedId, setCopiedId] = useState(null);
+  const [copiedId, setCopiedId] = useState("");
   const {getUrls , getAnalytics ,totalUrls , totalClicks , url,loading,deleteUrl} = useUrlStore();
   const router = useRouter();
   useEffect(() => {
@@ -31,13 +31,13 @@ const HistoryPage = () => {
 
 
 
-  const handleCopy = (text, id) => {
+  const handleCopy = (text:string, id:string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    setTimeout(() => setCopiedId(""), 2000);
   };
 
-  const formatDate = (dateString:string) => {
+  const formatDate = (dateString:Date) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",

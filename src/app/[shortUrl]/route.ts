@@ -5,8 +5,7 @@ import { getCountry } from "@/lib/getCountry";
 import { Click } from "@/models/clickModel/click";
 import { UAParser } from "ua-parser-js";
 
-export async function GET( req: NextRequest,
-  context: { params: { shortUrl: string } }) {
+export async function GET( req: NextRequest,context: any) {
   await ConnectDb();
 
   const { shortUrl } = context.params;

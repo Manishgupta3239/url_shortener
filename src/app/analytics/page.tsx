@@ -12,7 +12,7 @@ import PaymentPage from '../payment/page';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('7d');
-  const {getAnalytics , countries , devices ,totalClicks ,url,getUrls ,userAgent , loading ,clicksToday} = useUrlStore();
+  const {getAnalytics , countries , devices ,totalClicks ,url,getUrls , loading ,clicksToday} = useUrlStore();
   const id =  useSearchParams().get("id");
   const {data : session , status} = useSession();
   const router = useRouter();
@@ -36,6 +36,12 @@ const Analytics = () => {
     }
   
   
+type MetricCardProps = {
+  title: string;
+  value: string | number;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+};
+
   // Sample data
   const clicksData = [
     { date: '06/01', clicks: 120, uniqueClicks: 85 },
@@ -53,7 +59,7 @@ const Analytics = () => {
     { name: devices[2]?._id, value: devices[2]?.count, color: '#ec4899' }
   ];
 
-  const MetricCard = ({ title, value, change, icon: Icon, suffix = ''}) => (
+  const MetricCard:React.FC<MetricCardProps>  = ({ title, value, icon:Icon = () => null}) => (
     <div className="relative group">
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 via-blue-600/20 to-purple-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
@@ -118,27 +124,27 @@ const Analytics = () => {
           <MetricCard
             title="Total Clicks"
             value= {totalClicks }
-            change={8.2}
+           
             icon={MousePointer}
           />
           <MetricCard
             title="Clicks Today"
             value={`${clicksToday}`}
-            change={5.7}
+           
             icon={Eye}
           />
           <MetricCard
             title="Links Created"
             value={url.length}
-            change={12.3}
+           
             icon={Link}
           />
           <MetricCard
             title="Click Rate"
             value="3.2"
-            change={-2.1}
+           
             icon={TrendingUp}
-            suffix="%"
+            
           />
         </div>
 

@@ -5,10 +5,10 @@ import { getCountry } from "@/lib/getCountry";
 import { Click } from "@/models/clickModel/click";
 import { UAParser } from "ua-parser-js";
 
-export async function GET( req: NextRequest,context: any) {
+export async function GET( req: NextRequest,{params}:{params:Promise<{shortUrl:string}>}) {
   await ConnectDb();
 
-  const { shortUrl } = context.params;
+  const { shortUrl } = (await params);
   try{
     const document = await Url.findOneAndUpdate({ shortUrl: `http://localhost:3000/${shortUrl}` },{ $inc: { clicks: 1 } },{ new: true });
     const currentDate = new Date();

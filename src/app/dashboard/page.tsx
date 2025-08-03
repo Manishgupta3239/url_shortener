@@ -10,7 +10,7 @@ export default async function Dashboard() {
 
   return (
     <>
-      <UserDashboard User={user}/>
+      <UserDashboard image={user.image}/>
       {/* {<ProDashboard user={user}/>} */}
     </>
   );

@@ -1,11 +1,12 @@
-// /app/api/auth/[...nextauth]/route.ts
-import NextAuth, { Session  ,Token } from "next-auth";
+import { type Session } from "next-auth";
+import { type JWT } from "next-auth/jwt";
+import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import ConnectDb from "@/lib/connection";
 import { User } from "@/models/UserModel/user";
-import { userType } from "../../../../../types/userType";
+import type { NextAuthOptions} from "next-auth";
 
-export const authOptions = {
+export const authOptions : NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -15,35 +16,43 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     
-    async signIn({ user }:{user : userType}) {
+    async signIn({ user }) {
       await ConnectDb();
       const existingUser = await User.findOne({ email: user.email });
       if (!existingUser) {
         await User.create({ email: user.email, name: user.name });
       }
+       console.log(user , "chla on refresh signin");
       return true;
     },
 
-    async jwt({token , user}:{token:Token , user?:userType}){
-      await ConnectDb();
-      const usr = await User.findOne({ email: user?.email });
-      if (usr) {
-        console.log("usr",usr)
-        token._id = usr._id.toString();
-        token.plan = usr.plan;
-        token.createdAt = usr.createdAt;
-        token.credits = usr.credits
-      }
-    
-      return  token
-    },
+    async jwt({ token, user } : {token : JWT}) {
+  // On initial sign in
+  if (user) {
+    await ConnectDb();
+    const usr = await User.findOne({ email: user.email });
+    if (usr) {
+      token._id = usr._id.toString();
+      token.plan = usr.plan;
+      token.createdAt = usr.createdAt;
+      token.credits = usr.credits;
+      console.log("JWT ran on login:", token);
+    }
+  } else {
+    console.log("JWT ran on refresh, using existing token:", token);
+  }
 
-    async session({ session , token } :{session : Session ,token : Token}){
+  return token;
+},
+
+    async session({ session , token } :{session : Session ,token : JWT}){
+      console.log(session , "session hai yeh")
       if (session.user) {
-         session.user._id = token._id as string;
-        session.user.plan = token.plan;
-        session.user.createdAt = token.createdAt;
-        session.user.credits = token.credits
+        session.user._id = token._id as string;
+        session.user.plan = token.plan as string ;
+        session.user.createdAt = token.createdAt as Date;
+        session.user.credits = token.credits as number
+        console.log(session , "chla on refresh session");
       }
       return session;
     },

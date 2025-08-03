@@ -1,78 +1,115 @@
 import { create } from "zustand";
-
-type User = {
-  name: string | null;
-  email: string | null;
-  photo?: string | null;
-  plan?: string;
-  _id?: string;
-  createdAt?: Date;
-};
-type State = {
-  user: User | null;
-  loading: boolean;
-  setUser: (user: User) => void;
-  setLoading: (val: boolean) => void;
-  clearUser: () => void;
-};
-
-const useAuthStore = create<State>((set) => ({
-  loading: false,
-  user: null,
-  setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
-  setLoading: (val) => set({ loading: val }),
-}));
+import { userType } from "../../types/userType";
 
 type urlType = {
 
-    clicks :number,
-    createdBy :string,
-    createdAt:Date,
-    expiry:Date,
-    longUrl:string,
-    shortUrl:string
-    _id:string
+  clicks: number,
+  createdBy: string,
+  createdAt: Date,
+  expiry: Date,
+  longUrl: string,
+  shortUrl: string
+  _id: string
 }
 
 type UrlState = {
-    loading : boolean,
-    getUrls : ()=>void,
-    url :urlType[],
-    deleteUrl : (id:string)=>void,
+  loading: boolean,
+  url: urlType[],
+  credits: number,
+  devices: { _id: string, count: number }[],
+  totalClicks: number,
+  clicksToday: number,
+  countries: { _id: string, count: number }[],
+  userAgent: { _id: string, count: number }[],
+  totalUrls: number,
+  User: userType | null
+  getUrls: (limit?: number, page?: number) => void,
+  getAnalytics: (day?: string, _id?: string | null) => void,
+  getUser: () => void,
+  deleteUrl: (id: string) => void,
 }
 
 
-const useUrlStore = create<UrlState>((set,get) => ({
+const useUrlStore = create<UrlState>((set, get) => ({
   loading: true,
+  credits: 0,
   url: [],
-  getUrls: async () => {
+  countries: [],
+  userAgent: [],
+  devices: [],
+  totalClicks: 0,
+  clicksToday: 0,
+  totalUrls: 0,
+  User: null,
+
+  getUrls: async (limit, page) => {
     try {
-        set({loading : true});
-      const res = await fetch("/api/getUrls", {
+      set({ loading: true });
+      const res = await fetch(`/api/getUrls?limit=${limit}&page=${page}`, {
         method: "GET",
-        });    
-    const data = await res.json(); 
-     set({url : data.urls})
-      set({loading:false})
+      });
+      const data = await res.json();
+      set({ url: data.urls, credits: data.credits, totalUrls: data.total })
+      set({ loading: false })
     } catch (err) {
       console.log(err);
-    }finally{
-      set({loading : false})
+    } finally {
+      set({ loading: false })
     }
   },
-  deleteUrl : async (id)=>{
-    try{
-      set({loading : true})
-      const res = await fetch(`/api/delete/${id}`,{
-        method : "DELETE"
+
+  deleteUrl: async (id) => {
+    try {
+      set({ loading: true })
+      await fetch(`/api/delete/${id}`, {
+        method: "DELETE"
       });
-      console.log(res)
       get().getUrls()
-  
-    }catch(err){
-      console.log("error in delete fuction zustand",err);
+    } catch (err) {
+      console.log("error in delete fuction zustand", err);
+    }
+  },
+
+  getAnalytics: async (day, _id) => {
+    try {
+      set({ loading: true });
+      const url = _id ? (`/api/getAnalytics/${_id}?day=${day}`) : (`/api/getAnalytics?day=${day}`);
+      const res = await fetch(url, {
+        method: "GET"
+      })
+      const data = await res.json();
+      // console.log("analytics of url",data.clicks[0]);
+      set({
+        countries: data.clicks[0].country,
+        devices: data.clicks[0].devices,
+        totalClicks: data.clicks[0].totalClicks[0]?.count ?? 0,
+        userAgent: data.clicks[0].userAgent,
+        clicksToday: data.clicks[0].clicksToday[0]?.count ?? 0,
+      })
+      set({ loading: false });
+    } catch (error) {
+      console.error("errro while fecthing alaytics", error);
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  getUser: async () => {
+    try {
+      set({ loading: true });
+      const res = await fetch("/api/profile", {
+        method: "GET",
+      });
+      const data = await res.json();
+      console.log(data);
+      set({ User: data.user });
+      set({ loading: false })
+    } catch (err) {
+      console.log(err);
+    } finally {
+      set({ loading: false })
     }
   }
+  
 }));
-export { useAuthStore,useUrlStore };
+export { useUrlStore };

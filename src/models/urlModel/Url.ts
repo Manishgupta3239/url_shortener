@@ -19,11 +19,10 @@ const urlSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null, // optional for guest users
+      default: null, 
     },
     expiry:{
       type: Date
-
     }
   },
   { timestamps: true }

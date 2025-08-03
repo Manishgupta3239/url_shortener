@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Link,
   BarChart3,
@@ -13,15 +13,23 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react";
-import { userType } from "../../types/userType";
 import toast from "react-hot-toast";
+import { useUrlStore } from "@/store/AuthStore";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
-const LandingPage = ({ user }: { user : userType }) => {
+const LandingPage = () => {
   const [url, setUrl] = useState("");
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [isShortening, setIsShortening] = useState(false);
   const [copied, setCopied] = useState(false);
-  
+  const { credits, getUrls, loading, getUser, User: user } = useUrlStore();
+  const router = useRouter()
+  useEffect(() => {
+    getUrls();
+    getUser();
+  }, [getUrls, getUser]);
+
   const features = [
     {
       icon: Zap,
@@ -73,18 +81,18 @@ const LandingPage = ({ user }: { user : userType }) => {
       });
 
       const data = await res.json();
-      console.log("data",data)
-      setShortenedUrl(data.shortUrl);
-      setIsShortening(false);
-    } catch (error){
-      console.log("error",error);
+       if (!res.ok) {
+      toast.error(data.message); 
+       setIsShortening(false);
+      return;
     }
-
-    // Simulate API call
-    // setTimeout(() => {
-    //   setShortenedUrl(`https://lnk.spark/${Math.random().toString(36).substr(2, 8)}`);
-    //   setIsShortening(false);
-    // }, 1500);
+      console.log("data", data.message);
+      setShortenedUrl(data.shortUrl);
+      getUrls();
+      setIsShortening(false);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const copyToClipboard = () => {
@@ -136,16 +144,37 @@ const LandingPage = ({ user }: { user : userType }) => {
                     </div>
                     <button
                       onClick={handleShorten}
-                      disabled={!url || isShortening || user.credits <=0 }
+                      disabled={!url || isShortening}
                       className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                     >
                       {isShortening ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       ) : (
                         <>
-                          <span>{user?.credits <= 0 ? ("Limit crossed !"):("Shorten")}</span>
-                          {user?.credits <= 0 ? (""):<ArrowRight className="w-5 h-5" />}
-                          
+                          <span>
+                            {!user ? (
+                              "Shorten"
+                            ) : loading ? (
+                              <div className="items-center translate-x-[50%]">
+                                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              </div>
+                            ) : credits <= 0 && user.plan == "Free" ? (
+                              "Limit crossed !"
+                            ) : (
+                              "Shorten"
+                            )}
+                          </span>
+                          {!user ? (
+                            <ArrowRight className="w-5 h-5" />
+                          ) : loading ? (
+                            <div className="items-center translate-x-[50%]">
+                              <div className="w-6 h-6 "></div>
+                            </div>
+                          ) : user?.credits <= 0 ? (
+                            ""
+                          ) : (
+                            <ArrowRight className="w-5 h-5" />
+                          )}
                         </>
                       )}
                     </button>
@@ -247,7 +276,8 @@ const LandingPage = ({ user }: { user : userType }) => {
       </div>
 
       {/* CTA Section */}
-      <div className="relative py-20">
+
+      {user ? (""):(<div className="relative py-20">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
@@ -260,20 +290,28 @@ const LandingPage = ({ user }: { user : userType }) => {
             needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="relative group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300">
+            <button className="relative group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300"
+             onClick={() => {
+                  signIn(
+                    "google",
+                    { callbackUrl: "/" },
+                    { prompt: "select_account" }
+                  );}}
+            >
               <span className="relative z-10 flex items-center space-x-2">
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5" />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
             </button>
-            <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-300">
+            <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-300"
+            onClick={()=>router.push('/payment')}>
               View Pricing
             </button>
           </div>
         </div>
-      </div>
-
+      </div>)
+}
       {/* Footer */}
       <footer className="relative border-t border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

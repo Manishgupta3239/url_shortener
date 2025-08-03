@@ -6,6 +6,7 @@ import {
   BarChart3,
   Settings,
   ArrowRight,
+  ArrowLeft,
   Copy,
   Globe,
   Shield,
@@ -23,26 +24,55 @@ import {
   AlertTriangle,
   Gift,
 } from "lucide-react";
-import { userType } from "../../types/userType";
 import { useUrlStore } from "@/store/AuthStore";
 import { statsType } from "../../types/urlType";
 import { useRouter } from "next/navigation";
+import AuthSpinner from "./Spinner";
+import QRDisplay from "./GenerateQr";
+import { QrCode } from "lucide-react";
 
-const UserDashboard = ({ User }: { User: userType }) => {
+const UserDashboard = ({ image }: { image: string }) => {
   const [copiedLink, setCopiedLink] = useState("");
-  const { getUrls, url, loading, deleteUrl } = useUrlStore();
+  const [generateQR, setGenerateQr] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+
+  const {
+    getUrls,
+    url,
+    loading,
+    deleteUrl,
+    credits,
+    clicksToday,
+    getAnalytics,
+    totalClicks,
+    totalUrls,
+    getUser,
+    User,
+  } = useUrlStore();
+
   const router = useRouter();
+  const totalPage = Math.ceil(
+    url.filter((link) => {
+      if (!link.expiry) return true;
+      return new Date(link.expiry).getTime() >= Date.now();
+    }).length / limit
+  );
+  console.log(url);
+  useEffect(() => {
+    getUrls(limit, page);
+    getAnalytics();
+  }, [getUrls, getAnalytics, page, limit]);
 
   useEffect(() => {
-    getUrls();
-  }, [getUrls]);
+    getUser();
+  }, [getUser]);
 
-  console.log("user", User);
   // Mock user data - FREE USER
   const user = {
     name: "Sarah Wilson",
     email: "sarah@example.com",
-    plan: "free", // Changed to free
+    plan: "Free", // Changed to Free
     avatar: "SW",
     joinDate: "December 2024",
     linksCreated: 42, // Close to limit
@@ -52,42 +82,42 @@ const UserDashboard = ({ User }: { User: userType }) => {
 
   const stats: statsType[] = [
     {
-      title: "Credits  Used",
-      value: `${User.credits}/10`,
+      title: `${User?.plan == "Pro" ? "links created" : "Credits Left"}`,
+      value: `${User?.plan == "Pro" ? totalUrls : `${credits}/15`}`,
       change: "+8%",
       icon: Link,
       color: "from-cyan-500 to-blue-500",
       bgColor: "from-cyan-500/10 to-blue-500/10",
-      isLimited: User.plan == "Pro" ? false : true,
-      percentage: (User.credits / 10) * 100,
+      isLimited: User?.plan == "Pro" ? false : true,
+      percentage: (credits / 15) * 100,
     },
     {
-      title: "Monthly Clicks",
-      value: `${user.totalClicks}/1,000`,
+      title: "Total Clicks",
+      value: `${totalClicks ? totalClicks : "0"}`,
       change: "+15%",
       icon: MousePointer,
       color: "from-purple-500 to-pink-500",
       bgColor: "from-purple-500/10 to-pink-500/10",
-      isLimited: User.plan == "Pro" ? false : true,
-      percentage: (user.totalClicks / 1000) * 100,
+      isLimited: User?.plan == "Pro" ? false : true,
+      // percentage: (user.totalClicks / 1000) * 100,
     },
     {
       title: "Clicks Today",
-      value: user.clicksToday,
+      value: `${clicksToday}`,
       change: "+12%",
       icon: TrendingUp,
       color: "from-green-500 to-emerald-500",
       bgColor: "from-green-500/10 to-emerald-500/10",
-      isLimited: User.plan == "Pro" ? false : true,
+      isLimited: User?.plan == "Pro" ? false : true,
     },
     {
       title: "Analytics",
-      value: "Basic",
-      change: "Limited",
+      value: `${User?.plan == "Free" ? "Basic" : "Advance"}`,
+      change: `${User?.plan == "Free" ? "Limited" : ""}`,
       icon: Eye,
       color: "from-orange-500 to-red-500",
       bgColor: "from-orange-500/10 to-red-500/10",
-      isLimited: User.plan == "Pro" ? false : true,
+      isLimited: User?.plan == "Pro" ? false : true,
       isFeature: true,
     },
   ];
@@ -134,13 +164,14 @@ const UserDashboard = ({ User }: { User: userType }) => {
   const isNearLimit = (current: number, limit: number) =>
     current / limit >= 0.8;
 
+  if (!User) return <AuthSpinner />;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Navbar */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Upgrade Banner */}
-        {User?.plan == "free" && (
+        {User?.plan == "Free" && (
           <div className="mb-8">
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl blur-xl"></div>
@@ -152,7 +183,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        🎉 Upgrade to Pro and unlock everything!
+                        Upgrade to Pro and unlock everything!
                       </h3>
                       <p className="text-white/80 mb-3">
                         You&apos;re using {user.linksCreated}/50 links and{" "}
@@ -201,7 +232,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                 ""
               )}
               <h1 className="text-3xl font-bold text-white mb-2">
-                Welcome back, {User?.name}! 👋
+                Welcome back, {User?.name}!
               </h1>
               <p className="text-white/70">
                 Here&apos;s what&apos;s happening with your links today
@@ -232,12 +263,12 @@ const UserDashboard = ({ User }: { User: userType }) => {
                       {User?.plan} Plan
                     </div>
                     <div className="text-sm text-white/60">
-                      {User?.plan == "free"
+                      {User?.plan == "Free"
                         ? "Upgrade to unlock more features"
                         : "All features unlocked"}
                     </div>
                   </div>
-                  {User?.plan == "free" && (
+                  {User?.plan == "Free" && (
                     <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300">
                       Upgrade
                     </button>
@@ -247,7 +278,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
             </div>
 
             {/* Usage Warning */}
-            {User?.plan == "free" &&
+            {User?.plan == "Free" &&
               (isNearLimit(user.linksCreated, 50) ||
                 isNearLimit(user.totalClicks, 1000)) && (
                 <div className="mt-4 sm:mt-0">
@@ -302,7 +333,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         </div>
                       )}
                     </div>
-                    <span
+                    {/* <span
                       className={`text-sm font-medium ${
                         stat.isFeature
                           ? "text-yellow-400"
@@ -312,7 +343,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                       }`}
                     >
                       {stat.change}
-                    </span>
+                    </span> */}
                   </div>
                   <div className="text-2xl font-bold text-white mb-1">
                     {stat.value}
@@ -323,9 +354,9 @@ const UserDashboard = ({ User }: { User: userType }) => {
                     <div className="w-full bg-white/10 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all duration-300 ${
-                          stat.percentage >= 90
+                          stat.percentage <= 25
                             ? "bg-gradient-to-r from-red-500 to-red-600"
-                            : stat.percentage >= 80
+                            : stat.percentage <= 50
                             ? "bg-gradient-to-r from-yellow-500 to-orange-500"
                             : "bg-gradient-to-r from-cyan-500 to-blue-500"
                         }`}
@@ -356,12 +387,18 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         ? "bg-white/10 text-white/50 cursor-not-allowed"
                         : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg"
                     }`}
-                    disabled={url.length >= User.credits}
+                    disabled={credits <= 0 && User.plan == "Free"}
                     onClick={() => router.push("/")}
                   >
-                    <Plus className="w-4 h-4" />
+                    {credits <= 0 && User.plan == "Free" ? (
+                      ""
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
                     <span>
-                      {User.credits <= 0 ? "Limit Reached" : "New Link"}
+                      {credits <= 0 && User.plan == "Free"
+                        ? "Limit Reached"
+                        : "New Link"}
                     </span>
                   </button>
                 </div>
@@ -372,92 +409,158 @@ const UserDashboard = ({ User }: { User: userType }) => {
                       <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     </div>
                   ) : (
-                    url.map((link, index) => (
-                      <div
-                        key={index}
-                        className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                              <Link className="w-4 h-4 text-white" />
+                    url
+                      .filter(
+                        (link) =>
+                          link.expiry === null ||
+                          new Date(link.expiry).getTime() >= Date.now()
+                      )
+                      .map((link, index) => (
+                        <div
+                          key={index}
+                          className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                <Link className="w-4 h-4 text-white" />
+                              </div>
+                              <div>
+                                <div className="text-cyan-300 font-mono text-sm">
+                                  {link.shortUrl}
+                                </div>
+                                <div className="text-white/50 text-xs truncate max-w-xs">
+                                  {link.longUrl}
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="text-cyan-300 font-mono text-sm">
-                                {link.shortUrl}
+
+                            <div className="flex items-center space-x-2">
+                              <div className="text-white/70 text-sm">
+                                {link.clicks} clicks
                               </div>
-                              <div className="text-white/50 text-xs truncate max-w-xs">
-                                {link.longUrl}
+
+                              {/* copy button */}
+                              <button
+                                onClick={() => copyToClipboard(link.shortUrl)}
+                                className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                              >
+                                {copiedLink === link?.shortUrl ? (
+                                  <CheckCircle className="w-4 h-4 text-green-400" />
+                                ) : (
+                                  <Copy className="w-4 h-4 text-white/70" />
+                                )}
+                              </button>
+
+                              {/* bar graph */}
+                              <button
+                                className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200 relative group"
+                                onClick={() =>
+                                  router.push(`/analytics?id=${link._id}`)
+                                }
+                                disabled={User?.plan == "Free"}
+                              >
+                                <BarChart3 className="w-4 h-4 text-white/70" />
+                                {User?.plan == "Free" ? (
+                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Lock className="w-2.5 h-2.5 text-white" />
+                                  </div>
+                                ) : (
+                                  ""
+                                )}
+                              </button>
+
+                              {/* generate qr code button */}
+
+                              <div className="relative">
+                                <button
+                                  onClick={() => setGenerateQr(link.shortUrl)}
+                                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                                >
+                                  <QrCode className="w-4 h-4 text-white/70" />
+                                </button>
+                                {generateQR === link.shortUrl && (
+                                  <div className="absolute z-50 top-10 right-0">
+                                    <QRDisplay
+                                      url={link.shortUrl}
+                                      fnc={setGenerateQr}
+                                    />
+                                  </div>
+                                )}
                               </div>
+
+                              {/* delete button */}
+                              <button
+                                className="p-2 bg-white/10 hover:bg-red-500/20 rounded-lg transition-colors duration-200 group"
+                                onClick={() => deleteUrl(link._id)}
+                              >
+                                <Trash2 className="w-4 h-4 text-white/70 group-hover:text-red-400" />
+                              </button>
                             </div>
                           </div>
 
-                          <div className="flex items-center space-x-2">
-                            <div className="text-white/70 text-sm">
-                              {link.clicks} clicks
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(link.shortUrl)}
-                              className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                            >
-                              {copiedLink === link?.shortUrl ? (
-                                <CheckCircle className="w-4 h-4 text-green-400" />
-                              ) : (
-                                <Copy className="w-4 h-4 text-white/70" />
+                          <div className="flex items-center justify-between text-xs text-white/50">
+                            <span>
+                              Created on{" "}
+                              {new Date(link.createdAt).toLocaleDateString(
+                                "default",
+                                {
+                                  month: "long",
+                                  year: "numeric",
+                                  day: "2-digit",
+                                }
                               )}
-                            </button>
-                            <button className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200 relative group">
-                              <BarChart3 className="w-4 h-4 text-white/70" />
-                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Lock className="w-2.5 h-2.5 text-white" />
-                              </div>
-                            </button>
-                            <button
-                              className="p-2 bg-white/10 hover:bg-red-500/20 rounded-lg transition-colors duration-200 group"
-                              onClick={() => deleteUrl(link._id)}
-                            >
-                              <Trash2 className="w-4 h-4 text-white/70 group-hover:text-red-400" />
-                            </button>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                              <div
+                                className={`w-2 h-2 ${
+                                  new Date(link.expiry) < new Date()
+                                    ? "bg-red-400"
+                                    : "bg-green-400"
+                                } rounded-full`}
+                              ></div>
+                              <span>
+                                {link.expiry < link.createdAt
+                                  ? "Inactive"
+                                  : "Active"}
+                              </span>
+
+                              <span className="text-red-500 text-[17px]">
+                                {new Date() > new Date(link?.expiry)
+                                  ? "Expired"
+                                  : `Expires in ${Math.ceil(
+                                      (new Date(link?.expiry).getTime() -
+                                        Date.now()) /
+                                        (1000 * 60 * 60 * 24)
+                                    )} days`}
+                              </span>
+                            </span>
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-between text-xs text-white/50">
-                          <span>
-                            Created on{" "}
-                            {new Date(link.createdAt).toLocaleDateString(
-                              "default",
-                              {
-                                month: "long",
-                                year: "numeric",
-                                day: "2-digit",
-                              }
-                            )}
-                          </span>
-                          <span className="flex items-center space-x-1">
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span>Active </span>
-
-                            <span className="text-red-500 text-[17px]">
-                              Expires in{" "}
-                              {Math.ceil(
-                                (new Date(link?.expiry).getTime() -
-                                  Date.now()) /
-                                  (1000 * 60 * 60 * 24)
-                              )}{" "}
-                              days
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    ))
+                      ))
                   )}
                 </div>
-
-                <div className="mt-6 text-center">
-                  <button className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center space-x-2 mx-auto">
-                    <span>View All Links ({url?.length}/50)</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                {/* {pagination handler} */}
+                <div className="mt-6 flex justify-center items-center">
+                  {totalUrls > 5 ? (
+                    <div className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center space-x-2 ">
+                      <ArrowLeft
+                        className={`w-4 h-4 ${page == 1 ? "hidden" : ""}`}
+                        onClick={() => setPage((pre) => pre - 1)}
+                      />
+                      <span>
+                        Page {page}/{totalPage}
+                      </span>
+                      <ArrowRight
+                        className={`w-4 h-4 ${
+                          page == totalPage ? "hidden" : ""
+                        }`}
+                        onClick={() => setPage((pre) => pre + 1)}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
@@ -466,7 +569,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Upgrade CTA */}
-            {User?.plan == "free" && (
+            {User?.plan == "Free" && (
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl blur-xl"></div>
                 <div className="relative p-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-2xl backdrop-blur-sm">
@@ -490,7 +593,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
             )}
 
             {/* Pro Features Preview */}
-            {User?.plan == "free" ? (
+            {User?.plan == "Free" ? (
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl opacity-50"></div>
                 <div className="relative p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl">
@@ -560,13 +663,13 @@ const UserDashboard = ({ User }: { User: userType }) => {
                   <div>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-white/70">Links Created</span>
-                      <span className="text-white">{url.length}</span>
+                      <span className="text-white">{15 - credits}</span>
                     </div>
-                    {User?.plan === "free" && (
+                    {User?.plan === "Free" && (
                       <div className="w-full bg-white/10 rounded-full h-2">
                         <div
                           className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(url.length / 10) * 100}%` }}
+                          style={{ width: `${((15 - credits) / 15) * 100}%` }}
                         ></div>
                       </div>
                     )}
@@ -579,11 +682,11 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         {/* {user.totalClicks.toLocaleString()} / {planLimits[user.plan].clicks} */}
                       </span>
                     </div>
-                    {User?.plan === "free" && (
+                    {User?.plan === "Free" && (
                       <div className="w-full bg-white/10 rounded-full h-2">
                         {/* <div 
                           className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(user?.totalClicks / planLimits.free.clicks) * 100}%` }}
+                          style={{ width: `${(user?.totalClicks / planLimits.Free.clicks) * 100}%` }}
                         ></div> */}
                       </div>
                     )}
@@ -597,7 +700,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                   </div>
                 </div>
 
-                {User?.plan === "free" && (
+                {User?.plan === "Free" && (
                   <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300">
                     Upgrade to Pro
                   </button>
@@ -615,9 +718,9 @@ const UserDashboard = ({ User }: { User: userType }) => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                      {User?.image && (
+                      {image && (
                         <Image
-                          src={User?.image}
+                          src={image}
                           alt="User Photo"
                           width={40}
                           height={40}
@@ -635,13 +738,14 @@ const UserDashboard = ({ User }: { User: userType }) => {
                     <div className="flex justify-between text-sm">
                       <span className="text-white/70">Member since</span>
                       <span className="text-white">
-                        {new Date(User.createdAt).toLocaleDateString(
-                          "default",
-                          {
-                            month: "long",
-                            year: "numeric",
-                          }
-                        )}
+                        {User?.createdAt &&
+                          new Date(User.createdAt).toLocaleDateString(
+                            "default",
+                            {
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -656,7 +760,7 @@ const UserDashboard = ({ User }: { User: userType }) => {
                         >
                           {User?.plan}
                         </span>
-                        {User?.plan == "free" && (
+                        {User?.plan == "Free" && (
                           <button className="text-xs px-2 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full hover:shadow-lg transition-all">
                             Upgrade
                           </button>

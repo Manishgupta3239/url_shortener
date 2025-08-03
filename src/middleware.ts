@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-// const secret = process.env.NEXTAUTH_SECRET;
+
 export async function middleware(req : NextRequest){
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -16,5 +16,6 @@ export async function middleware(req : NextRequest){
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/getUrls/:path*"],
+  matcher: ["/dashboard/:path*", "/api/getUrls/:path*" , "/api/getAnalytics" ,"/api/razorpay/:path*" ,
+  "/api/profile/:path*"],
 };

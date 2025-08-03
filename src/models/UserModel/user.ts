@@ -10,8 +10,8 @@ const userSchema = new mongoose.Schema(
     name: String,
     plan: {
       type: String,
-      enum: ["free", "pro"],
-      default: "free",
+      enum: ["Free", "Pro"],
+      default: "Free",
     },
     credits:{
         type : Number,

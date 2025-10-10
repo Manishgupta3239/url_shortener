@@ -13,17 +13,19 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { useUrlStore } from "@/store/AuthStore";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+// import ShortLinkModal from "./ShortLinkModal";
 
 const LandingPage = () => {
   const [url, setUrl] = useState("");
-  const [shortenedUrl, setShortenedUrl] = useState("");
-  const [isShortening, setIsShortening] = useState(false);
+  // const [isOpen , setIsOpen] = useState(false);
+  // const [shortenedUrl, setShortenedUrl] = useState("");
+  // const [isShortening, setIsShortening] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { credits, getUrls, loading, getUser, User: user } = useUrlStore();
+  const { credits, getUrls,isShortening,shortenedUrl ,loading, getUser, User: user,handleShorten } = useUrlStore();
   const router = useRouter()
   useEffect(() => {
     getUrls();
@@ -63,37 +65,37 @@ const LandingPage = () => {
     { number: "99.9%", label: "Uptime", icon: Clock },
   ];
 
-  const handleShorten = async () => {
-    if (!url) return;
-    setIsShortening(true);
-    if (!user) {
-      toast.error("kindly login to continue");
-      setIsShortening(false);
-      return;
-    }
-    try {
-      const res = await fetch("/api/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ longUrl: url }),
-      });
+  // const handleShorten = async () => {
+  //   if (!url) return;
+  //   setIsShortening(true);
+  //   if (!user) {
+  //     toast.error("kindly login to continue");
+  //     setIsShortening(false);
+  //     return;
+  //   }
+  //   try {
+  //     const res = await fetch("/api/create", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ longUrl: url }),
+  //     });
 
-      const data = await res.json();
-       if (!res.ok) {
-      toast.error(data.message); 
-       setIsShortening(false);
-      return;
-    }
-      console.log("data", data.message);
-      setShortenedUrl(data.shortUrl);
-      getUrls();
-      setIsShortening(false);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+  //     const data = await res.json();
+  //      if (!res.ok) {
+  //     toast.error(data.message); 
+  //      setIsShortening(false);
+  //     return;
+  //   }
+  //     console.log("data", data.message);
+  //     setShortenedUrl(data.shortUrl);
+  //     getUrls();
+  //     setIsShortening(false);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
 
   const copyToClipboard = () => {
     // const fullUrl = `http://localhost:3000/api/${shortenedUrl}`;
@@ -106,6 +108,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
+        {/* <ShortLinkModal /> */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
 
@@ -143,7 +146,7 @@ const LandingPage = () => {
                       />
                     </div>
                     <button
-                      onClick={handleShorten}
+                      onClick={()=>handleShorten(url)}
                       disabled={!url || isShortening}
                       className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                     >

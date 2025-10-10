@@ -30,9 +30,11 @@ import { useRouter } from "next/navigation";
 import AuthSpinner from "./Spinner";
 import QRDisplay from "./GenerateQr";
 import { QrCode } from "lucide-react";
+import ShortLinkModal from "./ShortLinkModal";
 
 const UserDashboard = ({ image }: { image: string }) => {
   const [copiedLink, setCopiedLink] = useState("");
+  const [isOpen , setIsOpen] = useState(false);
   const [generateQR, setGenerateQr] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
@@ -166,7 +168,8 @@ const UserDashboard = ({ image }: { image: string }) => {
 
   if (!User) return <AuthSpinner />;
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      <ShortLinkModal open={isOpen} close={setIsOpen}/>
       {/* Navbar */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -636,18 +639,26 @@ const UserDashboard = ({ image }: { image: string }) => {
                     Quick Actions
                   </h3>
                   <div className="space-y-3">
-                    <button className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors duration-200">
+                    
+                    <button className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors duration-200"
+                    onClick={()=>setIsOpen(true)}
+                    >
                       <Link className="w-5 h-5 text-cyan-400" />
                       <span className="text-white">Create Short Link</span>
                     </button>
-                    <button className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors duration-200">
+
+                    <button className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors duration-200"
+                    onClick={()=>router.push('/analytics')}
+                    >
                       <BarChart3 className="w-5 h-5 text-purple-400" />
                       <span className="text-white">View Analytics</span>
                     </button>
+
                     <button className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors duration-200">
                       <Settings className="w-5 h-5 text-blue-400" />
                       <span className="text-white">Account Settings</span>
                     </button>
+
                   </div>
                 </div>
               </div>

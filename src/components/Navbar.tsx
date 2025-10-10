@@ -28,7 +28,7 @@ const Navbar = ({ user }: { user?: userType }) => {
   useEffect(() => {
     getUser();
   }, [getUser]);
-
+  console.log("user in navbar",User);
   const allTabs = [
     {
       id: "shorten",
@@ -45,7 +45,7 @@ const Navbar = ({ user }: { user?: userType }) => {
     {
       id: "analytics",
       label: "Analytics",
-      icon: BarChart3,
+      icon:  BarChart3,
       href: "/analytics",
     },
     {
@@ -60,6 +60,7 @@ const Navbar = ({ user }: { user?: userType }) => {
       icon: Crown,
       href: "/payment",
     },
+    
   ];
 
   const tabs =
@@ -111,6 +112,7 @@ const Navbar = ({ user }: { user?: userType }) => {
                     onClick={() => {
                       router.push(tab.href);
                       setActiveTab(tab.href);
+                      console.log("clicked")
                     }}
                     className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all  ease-out ${
                       isActive
@@ -133,6 +135,7 @@ const Navbar = ({ user }: { user?: userType }) => {
             </div>
           </div>
 
+          {/* checking if user is logged in or not */}
           {User ? (
             <div className="flex items-center space-x-4">
               {User.plan === "Pro" ? (

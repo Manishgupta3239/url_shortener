@@ -39,7 +39,7 @@ export default function PaymentPage() {
 
         const result = await verifyRes.json();
         if (result.success) window.location.href='/dashboard';
-        else alert('❌ Payment Verification Failed');
+        else alert('Payment Verification Failed');
       },
       theme: {
         color: '#f59e0b',

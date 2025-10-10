@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import AuthSpinner from '@/components/Spinner'
 import PaymentPage from '../payment/page';
 
-const Route = () => {
+const Analytics = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const {getAnalytics , countries , devices ,totalClicks ,url,getUrls , loading ,clicksToday} = useUrlStore();
   const id =  useSearchParams().get("id");
@@ -306,4 +306,4 @@ type MetricCardProps = {
   );
 };
 
-export default Route;
+export default Analytics;

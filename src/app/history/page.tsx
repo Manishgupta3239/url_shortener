@@ -78,7 +78,6 @@ const HistoryPage = () => {
   return (
     loading?(<AuthSpinner/>):
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -154,22 +153,22 @@ const HistoryPage = () => {
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value)}
-                className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
               >
-                <option value="all">All Links</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="all" className="text-black">All Links</option>
+                <option value="active" className="text-black">Active</option>
+                <option value="inactive" className="text-black">Inactive</option>
               </select>
 
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
               >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="most-clicks">Most Clicks</option>
-                <option value="least-clicks">Least Clicks</option>
+                <option value="newest" className="text-black">Newest First</option>
+                <option value="oldest" className="text-black">Oldest First</option>
+                <option value="most-clicks" className="text-black">Most Clicks</option>
+                <option value="least-clicks" className="text-black">Least Clicks</option>
               </select>
             </div>
           </div>

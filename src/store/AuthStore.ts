@@ -13,6 +13,8 @@ type urlType = {
 }
 
 type UrlState = {
+  shortenedUrl:string,
+  isShortening:boolean,
   loading: boolean,
   url: urlType[],
   credits: number,
@@ -22,7 +24,8 @@ type UrlState = {
   countries: { _id: string, count: number }[],
   userAgent: { _id: string, count: number }[],
   totalUrls: number,
-  User: userType | null
+  User: userType | null,
+  handleShorten:(url:string)=>void,
   getUrls: (limit?: number, page?: number) => void,
   getAnalytics: (day?: string, _id?: string | null) => void,
   getUser: () => void,
@@ -41,6 +44,8 @@ const useUrlStore = create<UrlState>((set, get) => ({
   clicksToday: 0,
   totalUrls: 0,
   User: null,
+  shortenedUrl:"",
+  isShortening:false,
 
   getUrls: async (limit, page) => {
     try {
@@ -109,7 +114,40 @@ const useUrlStore = create<UrlState>((set, get) => ({
     } finally {
       set({ loading: false })
     }
-  }
+  },
   
+  handleShorten : async(url)=>{
+    
+    if (!url) return;
+        set({isShortening:true})
+        console.log("hello from store")
+        // if (!user) {
+        //   // toast.error("kindly login to continue");
+        //   set({isShortening:false});
+        //   return;
+        // }
+        try {
+          const res = await fetch("/api/create", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ longUrl: url }),
+          });
+    
+          const data = await res.json();
+           if (!res.ok) {
+          // toast.error(data.message); 
+           set({isShortening:false});
+          return;
+        }
+          console.log("data", data.message);
+          set({shortenedUrl:data.shortUrl});
+          set({isShortening:false});
+        } catch (error) {
+          console.log("error", error);
+        }
+
+  }
 }));
 export { useUrlStore };

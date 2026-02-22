@@ -99,7 +99,8 @@ const LandingPage = ({ user }: { user?: userType }) => {
   // };
 
   const copyToClipboard = () => {
-    // const fullUrl = `http://localhost:3000/api/${shortenedUrl}`;
+    // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // const fullUrl = `${baseUrl}/api/${shortenedUrl}`;
     navigator.clipboard.writeText(shortenedUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

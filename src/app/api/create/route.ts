@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
         }
         const { longUrl } = await req.json();
         const created = nanoid(6);
-        const shortUrl = `http://localhost:3000/${created}`
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const shortUrl = `${baseUrl}/${created}`
         const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
         const newUrl = await Url.create({ longUrl, shortUrl, createdBy: user._id, expiry });
         const document = await User.findOneAndUpdate(

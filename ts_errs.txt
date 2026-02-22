@@ -1,0 +1,36 @@
+.next/types/app/api/auth/[...nextauth]/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("E:/programs/url_shortener/src/app/api/auth/[...nextauth]/route"), "config" | "generateStaticParams" | "revalidate" | "dynamic" | "dynamicParams" | "fetchCache" | ... 9 more ... | "PATCH", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'authOptions' is incompatible with index signature.
+    Type 'AuthOptions' is not assignable to type 'never'.
+.next/types/app/api/delete/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/getAnalytics/[_id]/route.ts(38,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "first"; __param_type__: NextResponse<unknown>; }' does not satisfy the constraint 'ParamCheck<Request | NextRequest>'.
+  Types of property '__param_type__' are incompatible.
+    Type 'NextResponse<unknown>' is not assignable to type 'Request | NextRequest'.
+      Type 'NextResponse<unknown>' is missing the following properties from type 'NextRequest': nextUrl, page, ua, [INTERNALS], and 11 more.
+.next/types/app/api/getAnalytics/[_id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { _id: number; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ _id: number; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+src/app/api/razorpay/verify/route.ts(13,29): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'BinaryLike | KeyObject'.
+  Type 'undefined' is not assignable to type 'BinaryLike | KeyObject'.
+src/app/dashboard/page.tsx(13,22): error TS2322: Type 'string | null | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/history/page.tsx(66,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/app/history/page.tsx(66,40): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/app/history/page.tsx(68,16): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/app/history/page.tsx(68,40): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/app/layout.tsx(36,19): error TS2322: Type '({ name?: string | null | undefined; email?: string | null | undefined; photo?: string | null | undefined; _id?: string | undefined; plan?: string | undefined; createdAt?: Date | undefined; credits: number; } & { ...; }) | undefined' is not assignable to type 'userType | undefined'.
+  Type '{ name?: string | null | undefined; email?: string | null | undefined; photo?: string | null | undefined; _id?: string | undefined; plan?: string | undefined; createdAt?: Date | undefined; credits: number; } & { ...; }' is not assignable to type 'userType | undefined'.
+    Type '{ name?: string | null | undefined; email?: string | null | undefined; photo?: string | null | undefined; _id?: string | undefined; plan?: string | undefined; createdAt?: Date | undefined; credits: number; } & { ...; }' is not assignable to type 'userType'.
+      Types of property 'createdAt' are incompatible.
+        Type 'Date | undefined' is not assignable to type 'Date'.
+          Type 'undefined' is not assignable to type 'Date'.
+src/app/page.tsx(12,20): error TS2322: Type '{ user: ({ name?: string | null | undefined; email?: string | null | undefined; photo?: string | null | undefined; _id?: string | undefined; plan?: string | undefined; createdAt?: Date | undefined; credits: number; } & { ...; }) | undefined; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'user' does not exist on type 'IntrinsicAttributes'.
+src/app/payment/page.tsx(33,32): error TS7006: Parameter 'response' implicitly has an 'any' type.
+src/app/payment/page.tsx(49,28): error TS2339: Property 'Razorpay' does not exist on type 'Window & typeof globalThis'.
+src/components/ProDashboard.tsx(285,53): error TS2339: Property 'linksCreated' does not exist on type 'userType'.
+src/components/ProDashboard.tsx(302,53): error TS2339: Property 'totalClicks' does not exist on type 'userType'.
+src/components/Upgrade.tsx(4,28): error TS7031: Binding element 'onClose' implicitly has an 'any' type.
+src/components/Upgrade.tsx(4,37): error TS7031: Binding element 'onUpgrade' implicitly has an 'any' type.
+types/urlType.ts(2,52): error TS2305: Module '"react"' has no exported member 'SVGSVGElement'.

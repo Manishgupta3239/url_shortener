@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET as string)
       .update(sign)
       .digest('hex');
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     if (isAuthentic) {
       // Optional: You can save payment info to DB here
-      const user = await User.findOneAndUpdate({_id},{plan : "Pro"}, {new : true});
+      const user = await User.findOneAndUpdate({ _id }, { plan: "Pro" }, { new: true });
       console.log(user)
       return Response.json({ success: true });
     } else {

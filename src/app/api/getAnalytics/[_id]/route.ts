@@ -1,13 +1,14 @@
 import { Click } from "@/models/clickModel/click";
 import { Url } from "@/models/urlModel/Url";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: NextResponse,
-  { params }: { params: { _id: number } }
+  req: NextRequest,
+  props: { params: Promise<{ _id: string }> }
 ) {
   try {
-    const url_id = await params._id; // request url id
+    const params = await props.params;
+    const url_id = params._id; // request url id
 
     const rawDate = new URL(req.url).searchParams.get("day");
     const date = parseInt(rawDate || "7");
@@ -54,12 +55,12 @@ export async function GET(
               },
             },
           ],
-           clicksToday: [
+          clicksToday: [
             {
               $match: {
                 timestamp: {
-                  $gte: new Date(new Date().setHours(0, 0, 0, 0)), 
-                  $lte: new Date(), 
+                  $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                  $lte: new Date(),
                 },
               },
             },

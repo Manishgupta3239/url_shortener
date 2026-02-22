@@ -1,48 +1,48 @@
 'use client'
 import React, { useState } from 'react';
 import Image from "next/image";
-import { 
-  Link, BarChart3, Settings, ArrowRight, Copy, TrendingUp, Star, CheckCircle, Crown, 
-   MousePointer, Eye, Trash2, 
+import {
+  Link, BarChart3, Settings, ArrowRight, Copy, TrendingUp, Star, CheckCircle, Crown,
+  MousePointer, Eye, Trash2,
   Plus
 } from 'lucide-react';
 import { userType } from '../../types/userType';
 
-const Dashboard = ({user}:{user:userType}) => {
+const Dashboard = ({ user }: { user: userType }) => {
   // const [activeTab, setActiveTab] = useState('analytics');
   const [copiedLink, setCopiedLink] = useState('');
-  console.log("user",user)
+  console.log("user", user)
 
   const stats = [
-    { 
-      title: 'Total Links', 
+    {
+      title: 'Total Links',
       // value: user.linksCreated, 
-      change: '+12%', 
-      icon: Link, 
+      change: '+12%',
+      icon: Link,
       color: 'from-cyan-500 to-blue-500',
       bgColor: 'from-cyan-500/10 to-blue-500/10'
     },
-    { 
-      title: 'Total Clicks', 
+    {
+      title: 'Total Clicks',
       // value: user.totalClicks.toLocaleString(), 
-      change: '+24%', 
-      icon: MousePointer, 
+      change: '+24%',
+      icon: MousePointer,
       color: 'from-purple-500 to-pink-500',
       bgColor: 'from-purple-500/10 to-pink-500/10'
     },
-    { 
-      title: 'Clicks Today', 
+    {
+      title: 'Clicks Today',
       // value: user.clicksToday, 
-      change: '+8%', 
-      icon: TrendingUp, 
+      change: '+8%',
+      icon: TrendingUp,
       color: 'from-green-500 to-emerald-500',
       bgColor: 'from-green-500/10 to-emerald-500/10'
     },
-    { 
-      title: 'Click Rate', 
-      value: '87%', 
-      change: '+5%', 
-      icon: Eye, 
+    {
+      title: 'Click Rate',
+      value: '87%',
+      change: '+5%',
+      icon: Eye,
       color: 'from-orange-500 to-red-500',
       bgColor: 'from-orange-500/10 to-red-500/10'
     }
@@ -83,9 +83,9 @@ const Dashboard = ({user}:{user:userType}) => {
     }
   ];
 
-  
 
-  const copyToClipboard = (url:string) => {
+
+  const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(`https://${url}`);
     setCopiedLink(url);
     setTimeout(() => setCopiedLink(''), 2000);
@@ -108,17 +108,16 @@ const Dashboard = ({user}:{user:userType}) => {
                 Welcome back, {user?.name}! 👋
               </h1>
               <p className="text-white/70">
-              Here &apos s what &apos s happening with your links today
+                Here &apos s what &apos s happening with your links today
               </p>
             </div>
-            
+
             {/* Plan Status Card */}
             <div className="mt-4 sm:mt-0">
-              <div className={`relative p-4 rounded-xl border ${
-                user.plan === 'Pro' 
-                  ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30' 
-                  : 'bg-white/5 border-white/20'
-              } backdrop-blur-sm`}>
+              <div className={`relative p-4 rounded-xl border ${user.plan === 'Pro'
+                ? 'bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
+                : 'bg-white/5 border-white/20'
+                } backdrop-blur-sm`}>
                 <div className="flex items-center space-x-3">
                   {user.plan === 'Pro' ? (
                     <Crown className="w-6 h-6 text-yellow-400" />
@@ -126,9 +125,8 @@ const Dashboard = ({user}:{user:userType}) => {
                     <Star className="w-6 h-6 text-white/70" />
                   )}
                   <div>
-                    <div className={`font-semibold ${
-                      user.plan === 'Pro' ? 'text-yellow-400' : 'text-white'
-                    }`}>
+                    <div className={`font-semibold ${user.plan === 'Pro' ? 'text-yellow-400' : 'text-white'
+                      }`}>
                       {user.plan} Plan
                     </div>
                     <div className="text-sm text-white/60">
@@ -196,7 +194,7 @@ const Dashboard = ({user}:{user:userType}) => {
                             <div className="text-white/50 text-xs truncate max-w-xs">{link.originalUrl}</div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <div className="text-white/70 text-sm">
                             {link.clicks.toLocaleString()} clicks
@@ -219,7 +217,7 @@ const Dashboard = ({user}:{user:userType}) => {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-xs text-white/50">
                         <span>Created {link.created}</span>
                         <span className="flex items-center space-x-1">
@@ -275,31 +273,31 @@ const Dashboard = ({user}:{user:userType}) => {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-white/70">Links Created</span>
                       <span className="text-white">
-                        {/* {user?.linksCreated} / {planLimits[user.plan].links} */}
+                        {/* {(user?.linksCreated || 0)} / {planLimits[user.plan].links} */}
                       </span>
                     </div>
                     {user.plan === 'Free' && (
                       <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(user?.linksCreated / planLimits.Free.links) * 100}%` }}
+                          style={{ width: `${((user?.linksCreated || 0) / (planLimits.Free.links as number)) * 100}%` }}
                         ></div>
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-white/70">Monthly Clicks</span>
                       <span className="text-white">
-                        {/* {user.totalClicks.toLocaleString()} / {planLimits[user.plan].clicks} */}
+                        {/* {(user.totalClicks || 0).toLocaleString()} / {planLimits[user.plan].clicks} */}
                       </span>
                     </div>
                     {user.plan === 'Free' && (
                       <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(user?.totalClicks / planLimits.Free.clicks) * 100}%` }}
+                          style={{ width: `${((user?.totalClicks || 0) / (planLimits.Free.clicks as number)) * 100}%` }}
                         ></div>
                       </div>
                     )}
@@ -329,28 +327,28 @@ const Dashboard = ({user}:{user:userType}) => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                       {user?.image && (
-                    <Image
-                      src={user?.image}
-                      alt="User Photo"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover"
-                    />
-                  )}
+                      {user?.image && (
+                        <Image
+                          src={user?.image}
+                          alt="User Photo"
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover"
+                        />
+                      )}
                     </div>
                     <div>
                       <div className="text-white font-medium">{user.name}</div>
                       <div className="text-white/60 text-sm">{user.email}</div>
                     </div>
                   </div>
-                  
+
                   <div className="pt-3 border-t border-white/10 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-white/70">Member since</span>
-                      <span className="text-white">{new Date(user.createdAt).toLocaleDateString('default',{
-                        month:'long',
-                        year:'numeric'
+                      <span className="text-white">{new Date(user.createdAt).toLocaleDateString('default', {
+                        month: 'long',
+                        year: 'numeric'
                       })}</span>
                     </div>
                     <div className="flex justify-between text-sm">

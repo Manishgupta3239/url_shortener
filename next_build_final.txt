@@ -1,0 +1,28 @@
+
+> my-app@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.2
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.0s
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./src/app/layout.tsx
+36:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/page.tsx
+12:34  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/payment/page.tsx
+33:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+49:32  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/LandingPage.tsx
+22:30  Error: 'sessionUser' is defined but never used.  @typescript-eslint/no-unused-vars
+22:54  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

@@ -3,6 +3,12 @@
 import { useEffect } from 'react';
 import { Crown, Lock, TrendingUp, BarChart3, Globe, Smartphone } from 'lucide-react';
 
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
 export default function PaymentPage() {
   useEffect(() => {
     const script = document.createElement('script');
@@ -30,7 +36,7 @@ export default function PaymentPage() {
       name: 'LinkSpark Premium',
       description: 'Upgrade to Pro Plan',
       order_id: order.id,
-      handler: async function (response) {
+      handler: async function (response: RazorpayResponse) {
         const verifyRes = await fetch('/api/razorpay/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -38,7 +44,7 @@ export default function PaymentPage() {
         });
 
         const result = await verifyRes.json();
-        if (result.success) window.location.href='/dashboard';
+        if (result.success) window.location.href = '/dashboard';
         else alert('Payment Verification Failed');
       },
       theme: {
@@ -46,7 +52,8 @@ export default function PaymentPage() {
       },
     };
 
-    const rzp = new window.Razorpay(options);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rzp = new (window as any).Razorpay(options);
     rzp.open();
   };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Zap, Crown, Lock, TrendingUp, BarChart3, Globe, Smartphone, X } from 'lucide-react';
 
-const ProUpgradeModal = ({ onClose, onUpgrade }) => {
+const ProUpgradeModal = ({ onClose, onUpgrade }: { onClose: () => void, onUpgrade?: () => void }) => {
   const proFeatures = [
     {
       icon: BarChart3,
@@ -37,7 +37,7 @@ const ProUpgradeModal = ({ onClose, onUpgrade }) => {
       {/* Modal Container */}
       <div className="relative max-w-2xl w-full mx-auto">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 via-blue-600/10 to-purple-600/10 rounded-3xl blur-xl"></div>
-        
+
         <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
           {/* Close Button */}
           <button
@@ -58,11 +58,11 @@ const ProUpgradeModal = ({ onClose, onUpgrade }) => {
                 <div className="absolute inset-0 h-16 w-16 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
               </div>
             </div>
-            
+
             <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400 bg-clip-text text-transparent mb-3">
               Pro Feature Locked
             </h2>
-            
+
             <p className="text-white/70 text-lg max-w-md mx-auto">
               This feature is exclusive to LinkSpark Pro users. Upgrade now to unlock advanced analytics and premium tools.
             </p>
@@ -97,13 +97,13 @@ const ProUpgradeModal = ({ onClose, onUpgrade }) => {
               <Crown className="h-5 w-5 text-amber-400" />
               <span className="text-amber-400 font-semibold">Limited Time Offer</span>
             </div>
-            
+
             <div className="flex items-center justify-center space-x-2 mb-2">
               <span className="text-white/60 text-2xl line-through">$19</span>
               <span className="text-4xl font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">$9</span>
               <span className="text-white/70 text-xl">/month</span>
             </div>
-            
+
             <p className="text-white/60 text-sm">
               50% off for the first 3 months
             </p>
@@ -121,7 +121,7 @@ const ProUpgradeModal = ({ onClose, onUpgrade }) => {
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
             </button>
-            
+
             <button
               onClick={onClose}
               className="flex-1 relative group px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold text-lg transition-all duration-300 ease-out hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"

@@ -1,9 +1,11 @@
+import ConnectDb from "@/lib/connection";
 import { User } from "@/models/UserModel/user";
 import { Url } from "@/models/urlModel/Url";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    await ConnectDb();
     const { searchParams } = new URL(req.url);
     const rawPage = searchParams.get("page");
     const page = parseInt(rawPage || "1", 10);

@@ -1,3 +1,4 @@
+import ConnectDb from "@/lib/connection";
 import { Click } from "@/models/clickModel/click";
 import { Url } from "@/models/urlModel/Url";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,6 +8,7 @@ export async function GET(
   props: { params: Promise<{ _id: string }> }
 ) {
   try {
+    await ConnectDb();
     const params = await props.params;
     const url_id = params._id; // request url id
 

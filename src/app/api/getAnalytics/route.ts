@@ -1,9 +1,11 @@
+import ConnectDb from "@/lib/connection";
 import { Click } from "@/models/clickModel/click";
 import { Url } from "@/models/urlModel/Url";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    await ConnectDb();
     const _id = req.headers.get("_id"); // logged in user id
 
     const urls = await Url.find({ createdBy: _id }).select("_id");

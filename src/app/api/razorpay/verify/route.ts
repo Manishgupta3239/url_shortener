@@ -1,9 +1,11 @@
+import ConnectDb from '@/lib/connection';
 import { User } from '@/models/UserModel/user';
 import crypto from 'crypto';
 import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
+    await ConnectDb();
     const _id = req.headers.get("_id"); // logged in user id
     const body = await req.json();
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;

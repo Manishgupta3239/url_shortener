@@ -1,3 +1,4 @@
+import ConnectDb from '@/lib/connection';
 import { User } from '@/models/UserModel/user';
 import { Url } from '@/models/urlModel/Url';
 import { NextRequest, NextResponse } from 'next/server';
@@ -5,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
+        await ConnectDb();
         const id = await params.id;
         const url = await Url.findOneAndDelete({ _id: id });
         const oneHour = 1000 * 60 * 60;

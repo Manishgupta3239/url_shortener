@@ -411,8 +411,7 @@ const UserDashboard = ({ image }: { image: string }) => {
                       <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     </div>
                   ) : (
-                    url
-                      .map((link, index) => (
+                 url.length > 0 ?    url.map((link, index) => (
                         <div
                           key={index}
                           className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
@@ -534,7 +533,7 @@ const UserDashboard = ({ image }: { image: string }) => {
                             </span>
                           </div>
                         </div>
-                      ))
+                      )) : <p className="text-white/50 text-sm text-center">No Recent links</p>
                   )}
                 </div>
                 {/* {pagination handler} */}

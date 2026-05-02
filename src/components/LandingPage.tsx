@@ -26,13 +26,16 @@ const LandingPage = ({ user }: { user?: userType }) => {
   // const [shortenedUrl, setShortenedUrl] = useState("");
   // const [isShortening, setIsShortening] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { credits, getUrls, isShortening, shortenedUrl, loading, getUser, handleShorten } = useUrlStore();
+  const { credits, getUrls, isShortening, shortenedUrl, loading, getUser, handleShorten , User} = useUrlStore();
   const router = useRouter()
   useEffect(() => {
     getUrls();
     getUser();
   }, [getUrls, getUser]);
 
+  console.log("User => ", user);
+  console.log("User => ", User);
+ 
   const features = [
     {
       icon: Zap,
@@ -149,7 +152,7 @@ const LandingPage = ({ user }: { user?: userType }) => {
                     </div>
                     <button
                       onClick={() => handleShorten(url)}
-                      disabled={!url || isShortening}
+                      disabled={!url || isShortening  || !user}
                       className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                     >
                       {isShortening ? (

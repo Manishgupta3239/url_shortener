@@ -187,8 +187,8 @@ const LandingPage = ({ user }: { user?: userType }) => {
 
                   {shortenedUrl && (
                     <div className="mt-6 p-4 bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-cyan-300 font-mono">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+                        <span className="text-cyan-300 font-mono break-all">
                           {shortenedUrl}
                         </span>
                         <button

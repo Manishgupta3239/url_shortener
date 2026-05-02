@@ -55,14 +55,13 @@ const UserDashboard = ({ image }: { image: string }) => {
 
   const router = useRouter();
   const totalPage = Math.ceil(
-    url.filter((link) => {
-      if (!link.expiry) return true;
-      return new Date(link.expiry).getTime() >= Date.now();
-    }).length / limit
-  );
-  console.log(url);
+    totalUrls / limit
+  ) || 1;
+  console.log("total url", totalUrls)
+  console.log("total page",totalPage)
+  console.log("page",page);
   useEffect(() => {
-    getUrls(limit, page);
+    getUrls(limit, page, "active");
     getAnalytics();
   }, [getUrls, getAnalytics, page, limit]);
 
@@ -413,33 +412,28 @@ const UserDashboard = ({ image }: { image: string }) => {
                     </div>
                   ) : (
                     url
-                      .filter(
-                        (link) =>
-                          link.expiry === null ||
-                          new Date(link.expiry).getTime() >= Date.now()
-                      )
                       .map((link, index) => (
                         <div
                           key={index}
                           className="group p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
                         >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-2 gap-4 sm:gap-0">
+                            <div className="flex items-center space-x-3 overflow-hidden">
+                              <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex shrink-0 items-center justify-center">
                                 <Link className="w-4 h-4 text-white" />
                               </div>
                               <div>
                                 <div className="text-cyan-300 font-mono text-sm">
                                   {link.shortUrl}
                                 </div>
-                                <div className="text-white/50 text-xs truncate max-w-xs">
+                                <div className="text-white/50 text-xs truncate max-w-[200px] sm:max-w-xs">
                                   {link.longUrl}
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex items-center space-x-2">
-                              <div className="text-white/70 text-sm">
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                              <div className="text-white/70 text-sm mr-2">
                                 {link.clicks} clicks
                               </div>
 
@@ -502,7 +496,7 @@ const UserDashboard = ({ image }: { image: string }) => {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between text-xs text-white/50">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-white/50 gap-2 sm:gap-0 mt-4 sm:mt-0 pt-2 sm:pt-0 border-t border-white/10 sm:border-0">
                             <span>
                               Created on{" "}
                               {new Date(link.createdAt).toLocaleDateString(

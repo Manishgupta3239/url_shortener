@@ -11,10 +11,21 @@ export async function GET(req: NextRequest) {
     const page = parseInt(rawPage || "1", 10);
     const rawLimit = searchParams.get("limit");
     const limit = parseInt(rawLimit || "4", 10);
+    const filter = searchParams.get("filter");
     const skip = (page - 1) * limit;
     const _id = req.headers.get("_id");
-    const urls = await Url.find({ createdBy: _id }).sort({createdAt : -1}).skip(skip).limit(limit)
-    const total = await Url.find({createdBy: _id}).countDocuments();
+    
+    let query: any = { createdBy: _id };
+    if (filter === "active") {
+      query.$or = [
+        { expiry: null },
+        { expiry: { $exists: false } },
+        { expiry: { $gte: new Date() } }
+      ];
+    }
+
+    const urls = await Url.find(query).sort({createdAt : -1}).skip(skip).limit(limit)
+    const total = await Url.find(query).countDocuments();
     const user = await User.findOne({ _id }); // fecthes user data to read the updated credits details
 
     return NextResponse.json({ message: "done", urls, credits: user.credits ,total});

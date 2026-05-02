@@ -26,7 +26,7 @@ type UrlState = {
   totalUrls: number,
   User: userType | null,
   handleShorten:(url:string)=>void,
-  getUrls: (limit?: number, page?: number) => void,
+  getUrls: (limit?: number, page?: number, filter?: string) => void,
   getAnalytics: (day?: string, _id?: string | null) => void,
   getUser: () => void,
   deleteUrl: (id: string) => void,
@@ -47,10 +47,11 @@ const useUrlStore = create<UrlState>((set, get) => ({
   shortenedUrl:"",
   isShortening:false,
 
-  getUrls: async (limit, page) => {
+  getUrls: async (limit, page, filter) => {
     try {
       set({ loading: true });
-      const res = await fetch(`/api/getUrls?limit=${limit}&page=${page}`, {
+      const filterParam = filter ? `&filter=${filter}` : "";
+      const res = await fetch(`/api/getUrls?limit=${limit}&page=${page}${filterParam}`, {
         method: "GET",
       });
       const data = await res.json();

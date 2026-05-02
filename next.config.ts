@@ -2,8 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['lh3.googleusercontent.com'], // 👈 add this line
+    domains: ['lh3.googleusercontent.com'],
   },
+  compiler: {
+  removeConsole: {
+    exclude: ['error'],
+  }
+}
 };
 
 export default nextConfig;

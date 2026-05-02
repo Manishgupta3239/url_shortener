@@ -10,6 +10,8 @@ import {
   Star,
   LayoutDashboard,
   Crown,
+  Menu,
+  X,
 } from "lucide-react";
 import { signIn, signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
@@ -22,6 +24,7 @@ const Navbar = ({ user }: { user?: userType }) => {
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState(pathname);
   const [loading, setLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getUser, User, loading: load } = useUrlStore();
   const router = useRouter();
 
@@ -88,7 +91,7 @@ const Navbar = ({ user }: { user?: userType }) => {
             </span>
           </div>
 
-          <div className="flex items-center">
+          <div className="hidden md:flex items-center">
             <div className="relative flex bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
               <div
                 className="pointer-events-none absolute top-1 h-9 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300 ease-out shadow-lg"
@@ -137,7 +140,7 @@ const Navbar = ({ user }: { user?: userType }) => {
 
           {/* checking if user is logged in or not */}
           {User ? (
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               {User.plan === "Pro" ? (
                 <div className="flex items-center space-x-2 px-3 py-1 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full">
                   <Crown className="w-4 h-4 text-yellow-400" />
@@ -175,7 +178,7 @@ const Navbar = ({ user }: { user?: userType }) => {
               </button>
             </div>
           ) : (
-            <div className="flex items-center">
+            <div className="hidden md:flex items-center">
               <button
                 className="relative group px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full font-medium transition-all duration-300 ease-out hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                 onClick={() => {
@@ -194,8 +197,93 @@ const Navbar = ({ user }: { user?: userType }) => {
               </button>
             </div>
           )}
+
+          {/* Mobile menu button */}
+          <div className="flex md:hidden items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-white/70 hover:text-white p-2"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 space-y-4">
+          <div className="flex flex-col space-y-2">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.href;
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    if (!User) return;
+                    router.push(tab.href);
+                    setActiveTab(tab.href);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    isActive
+                      ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30"
+                      : !User
+                      ? "text-white/30 cursor-not-allowed"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  }`}
+                  disabled={!User}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="pt-4 border-t border-white/10">
+            {User ? (
+              <div className="flex items-center justify-between px-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {user?.image && (
+                      <Image
+                        src={user.image}
+                        alt="User Photo"
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">{user?.name}</div>
+                    <div className="text-white/50 text-xs">{User.plan} Plan</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="p-2 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-medium transition-all"
+                onClick={() => {
+                  setLoading(true);
+                  signIn("google", { callbackUrl: "/" }, { prompt: "select_account" });
+                }}
+              >
+                {loading ? "Signing In..." : "Sign In"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
     </nav>

@@ -14,21 +14,27 @@ export async function GET(req: NextRequest) {
     const filter = searchParams.get("filter");
     const skip = (page - 1) * limit;
     const _id = req.headers.get("_id");
-    
-    let query: any = { createdBy: _id };
-    if (filter === "active") {
-      query.$or = [
+
+    const baseQuery = { createdBy: _id };
+
+    const activeFilter = {
+      $or: [
         { expiry: null },
         { expiry: { $exists: false } },
         { expiry: { $gte: new Date() } }
-      ];
-    }
+      ]
+    };
 
-    const urls = await Url.find(query).sort({createdAt : -1}).skip(skip).limit(limit)
+    const query =
+      filter === "active"
+        ? { ...baseQuery, ...activeFilter }
+        : baseQuery;
+
+    const urls = await Url.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
     const total = await Url.find(query).countDocuments();
     const user = await User.findOne({ _id }); // fecthes user data to read the updated credits details
 
-    return NextResponse.json({ message: "done", urls, credits: user.credits ,total});
+    return NextResponse.json({ message: "done", urls, credits: user.credits, total });
   } catch (error) {
     console.log("error in get urls route", error);
   }

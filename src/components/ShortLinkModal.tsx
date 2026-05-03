@@ -13,7 +13,7 @@ const ShortLinkModal = ({ open, close }: { open: boolean, close: (val: boolean) 
   const [url, setUrl] = useState("");
   const { shortenedUrl, handleShorten, isShortening, loading, User: user, credits } = useUrlStore();
   const [copied, setCopied] = useState(false);
-
+  const [customDomain, setCustomDomain] = useState("");
   console.log("hello")
   const copyToClipboard = () => {
     // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -28,36 +28,57 @@ const ShortLinkModal = ({ open, close }: { open: boolean, close: (val: boolean) 
 
   return (
     <div
-      className="fixed inset-0  bg-opacity-50 z-40 flex items-center justify-center ba"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
     // onClick={onClose} // Close when clicking the backdrop
     >
       <div
-        className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative z-50"
+        className="bg-slate-900/95 border border-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
       // onClick={(e) => e.stopPropagation()} 
       >
         <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+          className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
           onClick={() => close(false)}
         >
           ✕
         </button>
 
-        <h2 className="text-xl font-bold mb-4">Create Short Link</h2>
+        <h2 className="text-xl font-bold text-white mb-6">Create Short Link</h2>
 
         {/* Modal Content Here */}
-        <form className="space-y-4">
-          <input
-            type="text"
-            placeholder="Enter long URL..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-            onChange={(e) => setUrl(e.target.value)}
-            value={url}
-          />
+        <form className="space-y-5">
+          <div>
+            <input
+              type="text"
+              placeholder="Enter long URL..."
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all duration-300"
+              onChange={(e) => setUrl(e.target.value)}
+              value={url}
+            />
+          </div>
+
+          {/* custom domain */}
+          <div className="relative group">
+            <input
+              type="text"
+              placeholder="Custom domain (optional)..."
+              className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all duration-300 ${user?.plan !== 'Pro' ? 'blur-[2px] opacity-70 cursor-not-allowed select-none' : ''}`}
+              onChange={(e)=> setCustomDomain(e.target.value)}
+              value={customDomain}
+              disabled={user?.plan !== 'Pro'}
+            />
+            {user?.plan !== 'Pro' && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <span className="px-3 py-1 bg-slate-900/90 text-amber-400 text-xs font-semibold rounded-full border border-amber-400/30 shadow-lg backdrop-blur-md">
+                  ⭐ Pro Feature
+                </span>
+              </div>
+            )}
+          </div>
 
           <button
-            onClick={(e) => { e.preventDefault(); handleShorten(url) }}
+            onClick={(e) => { e.preventDefault(); handleShorten(url,customDomain) }}
             disabled={!url || isShortening}
-            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             {isShortening ? (
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -94,14 +115,14 @@ const ShortLinkModal = ({ open, close }: { open: boolean, close: (val: boolean) 
 
 
           {shortenedUrl && (
-            <div className="mt-6 p-4 bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-cyan-300 font-mono">
+            <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
+              <div className="flex flex-col space-y-3">
+                <span className="text-cyan-400 font-mono text-sm break-all">
                   {shortenedUrl}
                 </span>
                 <button
                   onClick={(e) => { e.preventDefault(); copyToClipboard() }}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
                 >
                   {copied ? (
                     <>

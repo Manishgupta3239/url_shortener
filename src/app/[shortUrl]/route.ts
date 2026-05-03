@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ shor
   const { shortUrl } = (await params);
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const document = await Url.findOneAndUpdate({ shortUrl: `${baseUrl}/${shortUrl}` }, { $inc: { clicks: 1 } }, { new: true });
+    const document = await Url.findOneAndUpdate({ shortUrl: `${shortUrl}` }, { $inc: { clicks: 1 } }, { new: true });
     const currentDate = new Date();
     if (!document) {
       return NextResponse.json({ message: "Invalid URL" }, { status: 404 });
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ shor
 
     // get country
     const country = await getCountry(ip);
-
+    
     // device
     const userAgent = req.headers.get("user-agent") || "Unknown"; // user agent
     const parser = new UAParser(userAgent);

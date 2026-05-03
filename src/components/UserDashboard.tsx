@@ -38,6 +38,7 @@ const UserDashboard = ({ image }: { image: string }) => {
   const [generateQR, setGenerateQr] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   const {
     getUrls,
@@ -390,7 +391,7 @@ const UserDashboard = ({ image }: { image: string }) => {
                         : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-lg"
                     }`}
                     disabled={credits <= 0 && User.plan == "Free"}
-                    onClick={() => router.push("/")}
+                    onClick={() => setIsOpen(true)}
                   >
                     {credits <= 0 && User.plan == "Free" ? (
                       ""
@@ -423,7 +424,7 @@ const UserDashboard = ({ image }: { image: string }) => {
                               </div>
                               <div>
                                 <div className="text-cyan-300 font-mono text-sm">
-                                  {link.shortUrl}
+                                  {baseUrl}/{link.shortUrl}
                                 </div>
                                 <div className="text-white/50 text-xs truncate max-w-[200px] sm:max-w-xs">
                                   {link.longUrl}
@@ -438,10 +439,10 @@ const UserDashboard = ({ image }: { image: string }) => {
 
                               {/* copy button */}
                               <button
-                                onClick={() => copyToClipboard(link.shortUrl)}
+                                onClick={() => copyToClipboard(`${baseUrl}/${link.shortUrl}`)}
                                 className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
                               >
-                                {copiedLink === link?.shortUrl ? (
+                                {copiedLink === `${baseUrl}/${link?.shortUrl}` ? (
                                   <CheckCircle className="w-4 h-4 text-green-400" />
                                 ) : (
                                   <Copy className="w-4 h-4 text-white/70" />
@@ -470,15 +471,15 @@ const UserDashboard = ({ image }: { image: string }) => {
 
                               <div className="relative">
                                 <button
-                                  onClick={() => setGenerateQr(link.shortUrl)}
+                                  onClick={() => setGenerateQr(`${baseUrl}/${link.shortUrl}`)}
                                   className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors duration-200"
                                 >
                                   <QrCode className="w-4 h-4 text-white/70" />
                                 </button>
-                                {generateQR === link.shortUrl && (
+                                {generateQR === `${baseUrl}/${link.shortUrl}` && (
                                   <div className="absolute z-50 top-10 right-0">
                                     <QRDisplay
-                                      url={link.shortUrl}
+                                      url={`${baseUrl}/${link.shortUrl}`}
                                       fnc={setGenerateQr}
                                     />
                                   </div>

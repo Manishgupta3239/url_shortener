@@ -23,6 +23,7 @@ const HistoryPage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [copiedId, setCopiedId] = useState("");
   const { getUrls, getAnalytics, totalUrls, totalClicks, url, loading, deleteUrl } = useUrlStore();
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
   const router = useRouter();
   useEffect(() => {
     getUrls();
@@ -234,7 +235,7 @@ const HistoryPage = () => {
 
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleCopy(url.shortUrl, url._id)}
+                        onClick={() => handleCopy(`${baseURL}/${url.shortUrl}`, url._id)}
                         className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-200 group"
                         title="Copy short URL"
                       >

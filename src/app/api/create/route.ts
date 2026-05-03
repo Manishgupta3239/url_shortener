@@ -19,12 +19,18 @@ export async function POST(req: NextRequest) {
         if (result.credits == 0 || result.plan == 'free') {
             return NextResponse.json({ message: "Limit crossed" }, { status: 403 })
         }
-        const { longUrl } = await req.json();
-        const created = nanoid(6);
+        const { longUrl , customDomain } = await req.json();
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const shortUrl = `${baseUrl}/${created}`
+        const domain = customDomain ? `${customDomain}` : `${nanoid(6)}`
+        const urlExists = await Url.findOne({shortUrl : domain});
+        console.log("url exjits",urlExists);
+        if(urlExists){
+            console.log("url already exists")
+            return NextResponse.json({message:"Url already exists"}, {status:400});
+        }
+        const shortUrl = `${baseUrl}/${domain}`
         const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
-        const newUrl = await Url.create({ longUrl, shortUrl, createdBy: user._id, expiry });
+        const newUrl = await Url.create({ longUrl, shortUrl:domain, createdBy: user._id, expiry });
         const document = await User.findOneAndUpdate(
             { _id: user._id },
             { $inc: { credits: -1 } },

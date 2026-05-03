@@ -17,6 +17,7 @@ type UrlState = {
   isShortening:boolean,
   loading: boolean,
   url: urlType[],
+  error:string | null,
   credits: number,
   devices: { _id: string, count: number }[],
   totalClicks: number,
@@ -25,7 +26,7 @@ type UrlState = {
   userAgent: { _id: string, count: number }[],
   totalUrls: number,
   User: userType | null,
-  handleShorten:(url:string)=>void,
+  handleShorten:(url:string , customDomain:string | null)=>void,
   getUrls: (limit?: number, page?: number, filter?: string) => void,
   getAnalytics: (day?: string, _id?: string | null) => void,
   getUser: () => void,
@@ -36,6 +37,7 @@ type UrlState = {
 const useUrlStore = create<UrlState>((set, get) => ({
   loading: true,
   credits: 0,
+  error:null,
   url: [],
   countries: [],
   userAgent: [],
@@ -117,7 +119,7 @@ const useUrlStore = create<UrlState>((set, get) => ({
     }
   },
   
-  handleShorten : async(url)=>{
+  handleShorten : async(url,customDomain)=>{
     
     if (!url) return;
         set({isShortening:true})
@@ -133,12 +135,15 @@ const useUrlStore = create<UrlState>((set, get) => ({
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ longUrl: url }),
+            body: JSON.stringify({ longUrl: url , customDomain}),
           });
     
           const data = await res.json();
            if (!res.ok) {
-          // toast.error(data.message); 
+          console.log("error in shorten url",data.message);
+            alert(data.message)
+          // set({error:data.message})
+            // toast.error(data.message); 
            set({isShortening:false});
           return;
         }
@@ -146,7 +151,9 @@ const useUrlStore = create<UrlState>((set, get) => ({
           set({shortenedUrl:data.shortUrl});
           set({isShortening:false});
         } catch (error) {
+          console.log("hello manish this is error")
           console.log("error", error);
+          
         }
 
   }

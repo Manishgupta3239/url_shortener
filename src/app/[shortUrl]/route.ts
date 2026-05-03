@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ shor
 
   const { shortUrl } = (await params);
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const document = await Url.findOneAndUpdate({ shortUrl: `${shortUrl}` }, { $inc: { clicks: 1 } }, { new: true });
     const currentDate = new Date();
     if (!document) {

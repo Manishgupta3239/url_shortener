@@ -4,11 +4,11 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com'],
   },
-//   compiler: {
-//   removeConsole: {
-//     exclude: ['error'],
-//   }
-// }
+  compiler: {
+  removeConsole: {
+    exclude: ['error'],
+  }
+}
 };
 
 export default nextConfig;
